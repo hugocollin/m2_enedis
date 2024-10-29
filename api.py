@@ -1,6 +1,5 @@
 # Importation des librairies nécessaires
 import requests
-import pandas as pd
 
 class API:
     # Constructeur de la classe
@@ -18,15 +17,17 @@ class API:
             raise Exception(f"Erreur lors de la récupération des données : [{response.status_code}] {response.text}")
 
     # Méthode pour récupérer les données
-    def get_all_data(self, query_params):
+    def get_all_data(self):
         all_data = []
         page_number = 1 
         total_lines = 0
 
         while True:
             try:
-                url = self.base_url.format(**query_params)
-                data = self.get_data(url)
+                if page_number == 1:
+                    data = self.get_data(self.base_url)
+                else:
+                    data = self.get_data(url)
                 lines_added = len(data["results"])
                 all_data.extend(data["results"])
                 total_lines += lines_added

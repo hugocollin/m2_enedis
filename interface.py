@@ -1,4 +1,5 @@
 # Importation des librairies nécessaires
+import os
 import dash
 from dash import html, dash_table
 
@@ -24,4 +25,5 @@ class DashInterface:
         ])
 
     def run(self):
-        self.app.run_server(debug=False)
+        port = int(os.environ.get('PORT', 8050))
+        self.app.run_server(debug=False, host='0.0.0.0', port=port)

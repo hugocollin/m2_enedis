@@ -12,17 +12,17 @@ class DashInterface:
 
     def setup_layout(self):
         self.app.layout = html.Div(children=[
-            html.H1(children='Résultats de Machine Learning'),
+            html.H1(children='m2_enedis'),
 
             html.Div(children='''
-                Visualisation des données récupérées.
+                Visualisation des données récupérées :
             '''),
 
-            # dash_table.DataTable(
-            #     id='table',
-            #     columns=[{"name": i, "id": i} for i in self.df.columns],
-            #     data=self.df.to_dict('records'),
-            # )
+            dash_table.DataTable(
+                id='table',
+                columns=[{"name": i, "id": i} for i in self.df.columns],
+                data=self.df.to_dict('records'),
+            )
         ])
 
     def run(self):

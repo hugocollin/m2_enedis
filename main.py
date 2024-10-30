@@ -15,10 +15,7 @@ import pandas as pd
 # all_data = api.get_all_data()
 
 # [TEMP] Récupération des données depuis un fichier CSV
-all_data = pd.read_csv("data.csv")
-
-# Création du DataFrame
-df = pd.DataFrame(all_data)
+df = pd.read_csv("data_69.csv", sep="|", encoding="utf-8")
 
 # Instanciation et exécution de l'interface Dash
 interface = DashInterface(df)

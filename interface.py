@@ -18,13 +18,13 @@ class DashInterface:
                 Visualisation des données récupérées.
             '''),
 
-            dash_table.DataTable(
-                id='table',
-                columns=[{"name": i, "id": i} for i in self.df.columns],
-                data=self.df.to_dict('records'),
-            )
+            # dash_table.DataTable(
+            #     id='table',
+            #     columns=[{"name": i, "id": i} for i in self.df.columns],
+            #     data=self.df.to_dict('records'),
+            # )
         ])
 
     def run(self):
-        port = int(os.environ.get('PORT', 10000))
+        port = int(os.environ.get('PORT', 8050))
         self.app.run_server(debug=False, host='0.0.0.0', port=port)

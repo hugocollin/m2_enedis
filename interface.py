@@ -51,14 +51,7 @@ class DashInterface:
             if tab == 'tab-1':
                 return html.Div([
                     html.H1('Contexte'),
-                    dash_table.DataTable(
-                        id='table',
-                        columns=[{"name": i, "id": i} for i in self.df.columns],
-                        data=self.df.to_dict('records'),
-                        page_size=30,
-                        style_table={'height': '400px', 'overflowY': 'auto'},
-                        virtualization=True,
-                    )
+                    html.Div('Les données seront affichées ici.')
                 ])
             elif tab == 'tab-2':
                 return html.Div([

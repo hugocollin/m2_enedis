@@ -1,4 +1,8 @@
+# Connexions aux fichiers du projet
 from api import API
+from interface import DashInterface
+
+# Importation des librairies nécessaires
 import pandas as pd
 
 # Paramètres de la requête
@@ -13,5 +17,6 @@ all_data = api.get_all_data()
 # Création du DataFrame
 df = pd.DataFrame(all_data)
 
-# [TEMP] Affichage du DataFrame
-print(df)
+# Instanciation et exécution de l'interface Dash
+interface = DashInterface(df)
+interface.run()

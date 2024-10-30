@@ -7,6 +7,7 @@ class DashInterface:
     def __init__(self, dataframe):
         self.df = dataframe
         self.app = dash.Dash(__name__)
+        self.server = self.app.server
         self.setup_layout()
 
     def setup_layout(self):

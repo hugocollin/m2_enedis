@@ -25,4 +25,5 @@ class DashInterface:
         ])
 
     def run(self):
-        self.app.run_server(debug=False, host='0.0.0.0', port=10000)
+        port = int(os.environ.get('PORT', 10000))
+        self.app.run_server(debug=False, host='0.0.0.0', port=port)

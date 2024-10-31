@@ -26,7 +26,7 @@ def main(county, from_api):
     if from_api :
         df = recup_api(county)
     else:
-        df = pd.read_csv(f'data_{county}.csv')
+        df = pd.read_csv(f'data_{county}.csv', sep='|')
     
     return df
 

@@ -1,5 +1,4 @@
 from api import API
-from interface import DashInterface
 import pandas as pd
 
 def recup_api(county):
@@ -29,9 +28,8 @@ def main(county, from_api):
     else:
         df = pd.read_csv(f'data_{county}.csv')
     
-    # Instanciation et exécution de l'interface Dash
-    interface = DashInterface(df)
-    interface.run()
+    return df
+
 
 if __name__ == "__main__":
     main(county='69', from_api=False)

@@ -1,4 +1,3 @@
-# Importation des librairies nécessaires
 import requests
 
 class API:
@@ -34,7 +33,7 @@ class API:
                 
                 print(f"Page {page_number} traitée : {lines_added} lignes ajoutées ({total_lines} lignes récupérées au total)")
                 
-                # Vérifier si 'next' existe pour continuer
+                # Récupération de l'URL de la page suivante
                 url = data.get("next")
                 if not url:
                     break

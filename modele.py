@@ -36,7 +36,6 @@ def modele(df):
 
     return y_pred
 
-
 if __name__ == "__main__":
-    df = pd.read_csv(f'data_69.csv', sep='|')
+    df = pd.read_csv(f'data/data_69.csv', sep='|')
     modele(df)

@@ -17,7 +17,6 @@ def recup_api(county):
 
     return df
 
-
 def main(county, from_api):
     """
     Ceci est la fonction principale
@@ -27,12 +26,11 @@ def main(county, from_api):
     if from_api :
         df = recup_api(county)
     else:
-        df = pd.read_csv(f'data_{county}.csv', sep='|')
+        df = pd.read_csv(f'data/data_{county}.csv', sep='|')
     
     # Instanciation et exécution de l'interface Dash
-    interface = DashInterface(df)
+    interface = DashInterface(df, county)
     interface.run()
-
 
 if __name__ == "__main__":
     main(county='69', from_api=False)

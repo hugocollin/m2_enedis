@@ -1,18 +1,18 @@
 import os
+import base64
 import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output
 import plotly.express as px
 import plotly.io as pio
-import io
-import base64
 
 class DashInterface:
-    def __init__(self, dataframe, county="69"):
+    def __init__(self, dataframe, county):
         self.df = dataframe
         self.county = county
         self.current_fig = None  
         self.app = dash.Dash(__name__)
+        self.app.title = "Projet Enedis"
         self.server = self.app.server
         self.setup_layout()
         self.setup_callbacks()
@@ -106,18 +106,34 @@ class DashInterface:
         )
         def update_dynamic_plot(x_col, y_col, graph_type):
             if x_col and y_col:
+                color_map = {
+                    'A': '#479E72',
+                    'B': '#6BAE5E',
+                    'C': '#ADCA7D',
+                    'D': '#F3E84F',
+                    'E': '#E7B741',
+                    'F': '#DE8647',
+                    'G': '#C6362C'
+                }
+                category_order = {
+                    'Etiquette_DPE': ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+                }
                 if graph_type == 'scatter':
                     fig = px.scatter(self.df, x=x_col, y=y_col, color='Etiquette_DPE',
-                                     title=f"Nuage de points ({x_col} vs {y_col}) par Etiquette DPE")
+                                    title=f"Nuage de points ({x_col} vs {y_col}) par Etiquette DPE",
+                                    color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'histogram':
                     fig = px.histogram(self.df, x=x_col, color='Etiquette_DPE',
-                                       title=f"Histogramme de {x_col} par Etiquette DPE")
+                                    title=f"Histogramme de {x_col} par Etiquette DPE",
+                                    color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'box':
                     fig = px.box(self.df, x='Etiquette_DPE', y=y_col,
-                                 title=f"Boîte à moustaches de {y_col} par Etiquette DPE")
+                                title=f"Boîte à moustaches de {y_col} par Etiquette DPE",
+                                color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'bar':
                     fig = px.bar(self.df, x=x_col, y=y_col, color='Etiquette_DPE',
-                                 title=f"Graphique en barres ({x_col} vs {y_col}) par Etiquette DPE")
+                                title=f"Graphique en barres ({x_col} vs {y_col}) par Etiquette DPE",
+                                color_discrete_map=color_map, category_orders=category_order)
                 
                 self.current_fig = fig  
                 return fig
@@ -147,4 +163,3 @@ class DashInterface:
     def run(self):
         port = int(os.environ.get('PORT', 8050))
         self.app.run_server(debug=False, host='0.0.0.0', port=port)
-

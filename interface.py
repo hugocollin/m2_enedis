@@ -97,7 +97,6 @@ class DashInterface:
                 multi=True,
                 placeholder="Filtrer par Etiquette DPE"
             ),
-
             dcc.Graph(id='dynamic-plot'),
             html.Button("Exporter en PNG", id="export-png", n_clicks=0),
             html.A(id="download-link", download="graph.png", children="")  

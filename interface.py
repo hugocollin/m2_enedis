@@ -10,64 +10,45 @@ import plotly.express as px
 import plotly.io as pio
 
 class DashInterface:
+    """
+    Interface Dash pour visualiser les données et faire des prédictions
+    """
+
+    # Constructeur de la classe
     def __init__(self, dataframe, county):
-        self.df = dataframe
-        self.county = county
-        self.current_fig = None  
-        self.app = dash.Dash(__name__)
+        self.app = dash.Dash(__name__, external_stylesheets=['/assets/style.css'])
         self.app.title = "Projet Enedis"
         self.server = self.app.server
+        self.df = dataframe
+        self.county = county
+        self.current_fig = None
         self.setup_layout()
         self.setup_callbacks()
 
+    # Méthode pour initialiser l'interface
     def setup_layout(self):
         self.app.layout = html.Div([
             dcc.Tabs(id="tabs", value='tab-1', children=[
-                dcc.Tab(label='Contexte', value='tab-1', style=self.tab_style, selected_style=self.tab_selected_style),
-                dcc.Tab(label='Graphiques', value='tab-2', style=self.tab_style, selected_style=self.tab_selected_style),
-                dcc.Tab(label='Prédiction', value='tab-3', style=self.tab_style, selected_style=self.tab_selected_style),
+                dcc.Tab(label='Contexte', value='tab-1', className='tab', selected_className='tab selected'),
+                dcc.Tab(label='Graphiques', value='tab-2', className='tab', selected_className='tab selected'),
+                dcc.Tab(label='Prédiction', value='tab-3', className='tab', selected_className='tab selected'),
             ]),
-            html.Div(id='tabs-content'),
-            dcc.ConfirmDialog(
-                id='alert',
-                message='Veuillez remplir tous les champs obligatoires.'
-            )
-        ], style={'fontFamily': 'Century Gothic, sans-serif'})
-
-    @property
-    def tab_style(self):
-        return {
-            'padding': '10px',
-            'fontWeight': 'bold',
-            'backgroundColor': '#f9f9f9',
-            'border': '1px solid #d6d6d6',
-            'borderRadius': '5px',
-            'margin': '5px'
-        }
-
-    @property
-    def tab_selected_style(self):
-        return {
-            'padding': '10px',
-            'fontWeight': 'bold',
-            'backgroundColor': '#007bff',
-            'color': 'white',
-            'border': '1px solid #d6d6d6',
-            'borderRadius': '5px',
-            'margin': '5px'
-        }
+            html.Div(id='tabs-content')
+        ])
     
+    # Méthode pour afficher la page "Contexte"
     def render_context_page(self):
         return html.Div([
-            html.H3('Contexte'),
+            html.H1('Contexte'),
             html.P("Cliquez sur le bouton ci-dessous pour télécharger les données en CSV :"),
             html.Button("Télécharger les données CSV", id="export-csv-context", n_clicks=0),
             dcc.Download(id="download-dataframe-csv-context")
         ])
 
+    # Méthode pour afficher la page "Graphiques"
     def render_graphs_page(self):
         return html.Div([
-            html.H3('Graphiques interactifs'),
+            html.H1('Graphiques interactifs'),
             dcc.Dropdown(
                 id='graph-type',
                 options=[
@@ -102,10 +83,11 @@ class DashInterface:
             html.A(id="download-link", download="graph.png", children="")  
         ])
     
+    # Méthode pour afficher la page "Prédiction"
     def render_prediction_page(self):
         return html.Div([
-            html.H3('Remplissez les champs ci-dessous pour obtenir une prédiction de la classe énergétique de votre logement :'),
-            html.H4('Informations générales sur le logement'),
+            html.H1('Remplissez les champs ci-dessous pour obtenir une prédiction de la classe énergétique de votre logement :'),
+            html.H2('Informations générales sur le logement'),
             html.Div([
                 html.Label('Code postal'),
                 dcc.Input(id='code-postal', type='text', placeholder='Code postal'),
@@ -134,7 +116,7 @@ class DashInterface:
                 html.Label('Hauteur sous plafond (en m)'),
                 dcc.Input(id='hauteur-plafond', type='number', placeholder='Hauteur sous plafond'),
             ]),
-            html.H4('Informations de consommation du logement'),
+            html.H2('Informations de consommation du logement'),
             html.Div([
                 html.Label('Type d\'énergie du chauffage'),
                 dcc.Dropdown(
@@ -167,7 +149,10 @@ class DashInterface:
             html.Div(id='prediction-result')
         ])
 
+    # Méthode pour initialiser les callbacks
     def setup_callbacks(self):
+
+        # Callback pour afficher le contenu de l'onglet sélectionné
         @self.app.callback(
             Output('tabs-content', 'children'),
             [Input('tabs', 'value')]
@@ -180,6 +165,7 @@ class DashInterface:
             elif tab == 'tab-3':
                 return self.render_prediction_page()
 
+        # Callback pour mettre à jour le graphique dynamique
         @self.app.callback(
             Output('dynamic-plot', 'figure'),
             [Input('x-axis', 'value'), Input('y-axis', 'value'), Input('graph-type', 'value'), Input('data-filter', 'value')]
@@ -224,6 +210,7 @@ class DashInterface:
                 return fig
             return {}
 
+        # Callback pour télécharger le graphique en PNG
         @self.app.callback(
             Output("download-link", "href"),
             Input("export-png", "n_clicks"),
@@ -237,6 +224,7 @@ class DashInterface:
                 return f"data:image/png;base64,{encoded_image}"
             return ""
 
+        # Callback pour télécharger les données en CSV
         @self.app.callback(
             Output("download-dataframe-csv-context", "data"),
             Input("export-csv-context", "n_clicks"),
@@ -245,59 +233,46 @@ class DashInterface:
         def download_csv_context(n_clicks):
             return dcc.send_data_frame(self.df.to_csv, f"data_{self.county}.csv", index=False)
         
+        # Callback pour faire une prédiction
         @self.app.callback(
-            [Output('prediction-result', 'children'),
-             Output('alert', 'displayed')],
-            [Input('submit-button', 'n_clicks')],
-            [State('conso-totale', 'value'),
-             State('nom-commune', 'value'),
-             State('conso-ecs', 'value'),
-             State('code-postal', 'value'),
-             State('hauteur-plafond', 'value'),
-             State('adresse', 'value'),
-             State('surface-habitable', 'value'),
-             State('nombre-etage', 'value'),
-             State('annee-construction', 'value'),
-             State('conso-chauffage', 'value'),
-             State('type-batiment', 'value'),
-             State('type-energie-ecs', 'value'),
-             State('type-energie-chauffage', 'value')]
+            Output('prediction-result', 'children'),
+            Input('submit-button', 'n_clicks'),
+            State('code-postal', 'value'),
+            State('annee-construction', 'value'),
+            State('type-batiment', 'value'),
+            State('surface-habitable', 'value'),
+            State('nombre-etage', 'value'),
+            State('hauteur-plafond', 'value'),
+            State('type-energie-chauffage', 'value'),
+            State('type-energie-ecs', 'value'),
+            State('conso-totale', 'value'),
+            State('conso-chauffage', 'value'),
+            State('conso-ecs', 'value')
         )
-        def update_prediction(n_clicks, conso_totale, nom_commune, conso_ecs, code_postal, hauteur_plafond, adresse, surface_habitable, nombre_etage, annee_construction, conso_chauffage, type_batiment, type_energie_ecs, type_energie_chauffage):
+        def predict(n_clicks, code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs):
             if n_clicks > 0:
-                # Vérifier que tous les champs obligatoires sont remplis
-                if not all([conso_totale, nom_commune, conso_ecs, code_postal, hauteur_plafond, adresse, surface_habitable, nombre_etage, annee_construction, conso_chauffage, type_batiment, type_energie_ecs, type_energie_chauffage]):
-                    return "", True
-
-                # Créer un DataFrame avec les valeurs saisies
-                input_data = pd.DataFrame({
-                    'Conso_5_usages_é_finale': [conso_totale],
-                    'Nom__commune_(BAN)': [nom_commune],
-                    'Conso_ECS_é_finale': [conso_ecs],
+                if not all([code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs]):
+                    return html.H3(f"Veuillez remplir tous les champs")
+                
+                data = pd.DataFrame({
                     'Code_postal_(BAN)': [code_postal],
-                    'Hauteur_sous_plafond': [hauteur_plafond],
-                    'Adresse_(BAN)': [adresse],
+                    'Période_construction': [annee_construction],
+                    'Type_bâtiment': [type_batiment],
                     'Surface_habitable_logement': [surface_habitable],
                     'Nombre_niveau_logement': [nombre_etage],
-                    'Période_construction': [annee_construction],
-                    'Conso_chauffage': [conso_chauffage],
-                    'Type_bâtiment': [type_batiment],
+                    'Hauteur_sous_plafond': [hauteur_plafond],
+                    'Type_énergie_principale_chauffage': [type_energie_chauffage],
                     'Type_énergie_principale_ECS': [type_energie_ecs],
-                    'Type_énergie_principale_chauffage': [type_energie_chauffage]
+                    'Conso_5_usages_é_finale': [conso_totale],
+                    'Conso_chauffage': [conso_chauffage],
+                    'Conso_ECS_é_finale': [conso_ecs],
+                    'Classe_altitude': ['inférieur à 400m'] # [TEMP] À changer par des données réelles
                 })
 
-                # Faire la prédiction
-                prediction = Model.predict_model(input_data)
-                return f"La classe énergétique prédite est : {prediction}", False
-            return "", False
+                prediction = Model.predict(data)
+                return html.H3(f"Votre logement est classé en catégorie : {prediction}")
 
+    # Méthode pour exécuter l'interface Dash
     def run(self):
         port = int(os.environ.get('PORT', 8050))
         self.app.run_server(debug=False, host='0.0.0.0', port=port)
-
-if __name__ == '__main__':
-    # Exemple d'utilisation
-    df = pd.read_csv('votre_fichier.csv')  # Remplacez par votre fichier CSV
-    county = 'votre_comté'  # Remplacez par votre comté
-    interface = DashInterface(df, county)
-    interface.run()

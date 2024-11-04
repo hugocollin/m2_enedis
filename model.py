@@ -8,7 +8,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 
 class Model:
-    def train_model(df, local_data, county):
+    def train(df, local_data, county):
         """
         Cette fonction permet de créer un modèle de classification de l'étiquette DPE
         """
@@ -33,6 +33,9 @@ class Model:
         y = df["Etiquette_DPE"]
         X = df.drop(columns=["Etiquette_DPE"])
 
+        # Sauvegarde des noms des colonnes
+        feature_names = X.columns
+
         # Normalisation des données
         scaler = StandardScaler()
         X = scaler.fit_transform(X)
@@ -40,55 +43,49 @@ class Model:
         # Séparation des données en jeu d'entraînement et jeu de test
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.30, stratify=y, random_state = 0)
 
-        # Création du modèle et recherche sur grille
+        # Création du modèle
         model = MLPClassifier(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001)
         model.fit(X_train, y_train)
 
-        # Sauvegarde du modèle et du scaler
-        joblib.dump(model, 'model/mlp_model.pkl')
+        # Sauvegarde du modèle, du scaler et des noms des variables
+        joblib.dump(model, 'model/model.pkl')
         joblib.dump(scaler, 'model/scaler.pkl')
+        joblib.dump(feature_names, 'model/feature_names.pkl')
 
         # Évaluation du modèle
         y_pred = model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
         print(f"Précision du modèle : {accuracy}")
 
-    def predict_model(input_data):
+    def predict(data):
         """
         Cette fonction permet de faire une prédiction de la classe énergétique
         """
 
-        # Chargement du modèle et du scaler
-        model = joblib.load('model/mlp_model.pkl')
+        # Chargement du modèle, du scaler, et des noms des variables
+        model = joblib.load('model/model.pkl')
         scaler = joblib.load('model/scaler.pkl')
+        feature_names = joblib.load('model/feature_names.pkl')
 
         # Transformation de l'information "Année de construction" en "Période de construction"
-        if input_data['Période_construction'] < 1948:
-            input_data['Période_construction'] = 'avant 1948'
-        elif input_data['Période_construction'] >= 1948 and input_data['Période_construction'] <= 1974:
-            input_data['Période_construction'] = '1948-1974'
-        elif input_data['Période_construction'] >= 1975 and input_data['Période_construction'] <= 1977:
-            input_data['Période_construction'] = '1975-1977'
-        elif input_data['Période_construction'] >= 1978 and input_data['Période_construction'] <= 1982:
-            input_data['Période_construction'] = '1978-1982'
-        elif input_data['Période_construction'] >= 1983 and input_data['Période_construction'] <= 1988:
-            input_data['Période_construction'] = '1983-1988'
-        elif input_data['Période_construction'] >= 1989 and input_data['Période_construction'] <= 2000:
-            input_data['Période_construction'] = '1989-2000'
-        elif input_data['Période_construction'] >= 2001 and input_data['Période_construction'] <= 2005:
-            input_data['Période_construction'] = '2001-2005'
-        elif input_data['Période_construction'] >= 2006 and input_data['Période_construction'] <= 2012:
-            input_data['Période_construction'] = '2006-2012'
-        elif input_data['Période_construction'] >= 2013 and input_data['Période_construction'] <= 2021:
-            input_data['Période_construction'] = '2013-2021'
-        else:
-            input_data['Période_construction'] = 'Après 2021'
+        data['Période_construction'] = data['Période_construction'].apply(lambda x: 
+            'avant 1948' if x < 1948 else
+            '1948-1974' if 1948 <= x <= 1974 else
+            '1975-1977' if 1975 <= x <= 1977 else
+            '1978-1982' if 1978 <= x <= 1982 else
+            '1983-1988' if 1983 <= x <= 1988 else
+            '1989-2000' if 1989 <= x <= 2000 else
+            '2001-2005' if 2001 <= x <= 2005 else
+            '2006-2012' if 2006 <= x <= 2012 else
+            '2013-2021' if 2013 <= x <= 2021 else
+            'Après 2021'
+        )
         
         # Application des mêmes transformations que lors de l'entraînement
-        input_data = pd.get_dummies(input_data, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])
-        input_data = input_data.reindex(columns=model.feature_names_in_, fill_value=0)
-        input_data = scaler.transform(input_data)
+        data = pd.get_dummies(data, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])
+        data = data.reindex(columns=feature_names, fill_value=0)
+        data = scaler.transform(data)
 
         # Prédiction
-        prediction = model.predict(input_data)
+        prediction = model.predict(data)
         return prediction[0]

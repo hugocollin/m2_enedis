@@ -1,6 +1,7 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 
 def modele(df):
@@ -8,31 +9,41 @@ def modele(df):
     Cette fonction a pour but de construire un modèle prédisant la classe énergétique d'un logement
     :param df: dataframe contenant les données de départ, avec toutes les colonnes sélectionnées lors du scrapping de l'API
     """
-    # On enlève des colonnes, soit inutiles soit trop de na
-    col_a_suppr = ['Adresse_(BAN)', '_geopoint', 'Année_construction', 'Nombre_niveau_logement']
-    df.drop(columns=col_a_suppr, inplace=True, errors='ignore')
+    # Suppresion des colonnes informatives
+    del_col = ['Adresse_(BAN)', 'Nom__commune_(BAN)', '_geopoint']
+    df.drop(columns=del_col, inplace=True, errors='ignore')
     
-    # on retire les na
+    # Suppression des lignes avec des valeurs manquantes
     df = df.dropna()
 
-    # définition de la variable cible pour ne pas le réécrir à chaque fois
+    # Définition de la variable cible
     target = 'Etiquette_DPE'
 
-    # Définition des cibles / 
+    # Préparation des données pour le modèle
+    df = pd.get_dummies(df, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])
+
+    # Définition des variables explicatives et de la variable cible
     y = df[target]
     X = df.drop(columns=[target])
 
-    # découpage train_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.30, stratify = y, random_state = 0)
+    # Normalisation des données
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
 
-    # Créer et entraîner le modèle
-    model = DecisionTreeClassifier()
+    # Séparation des données en jeu d'entraînement et jeu de test
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.30, stratify=y, random_state = 0)
+
+    # Création du modèle et recherche sur grille
+    model = MLPClassifier(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
 
-    # Je ne sais pas s'il faut les garder
+    # Calcul de la précision du modèle
     accuracy = accuracy_score(y_test, y_pred)
     mc = pd.crosstab(y_test, y_pred, colnames=['pred'], rownames=['obs'], margins=True)
+
+    print(f"Précision du modèle : {accuracy}")
+    print(mc)
 
     return y_pred
 

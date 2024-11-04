@@ -76,10 +76,18 @@ class DashInterface:
                 value=self.df.columns[1] if len(self.df.columns) > 1 else None,
                 placeholder="Choisir l'axe des Y"
             ),
+            dcc.Dropdown(
+                id='data-filter',
+                options=[{'label': label, 'value': label} for label in self.df['Etiquette_DPE'].unique()],
+                multi=True,
+                placeholder="Filtrer par Etiquette DPE"
+            ),
+            
             dcc.Graph(id='dynamic-plot'),
             html.Button("Exporter en PNG", id="export-png", n_clicks=0),
             html.A(id="download-link", download="graph.png", children="")  
         ])
+
 
     def render_context_page(self):
         return html.Div([
@@ -102,10 +110,14 @@ class DashInterface:
 
         @self.app.callback(
             Output('dynamic-plot', 'figure'),
-            [Input('x-axis', 'value'), Input('y-axis', 'value'), Input('graph-type', 'value')]
+            [Input('x-axis', 'value'), Input('y-axis', 'value'), Input('graph-type', 'value'), Input('data-filter', 'value')]
         )
-        def update_dynamic_plot(x_col, y_col, graph_type):
+        def update_dynamic_plot(x_col, y_col, graph_type, filter_values):
             if x_col and y_col:
+                filtered_df = self.df
+                if filter_values:  
+                    filtered_df = filtered_df[filtered_df['Etiquette_DPE'].isin(filter_values)]
+            
                 color_map = {
                     'A': '#479E72',
                     'B': '#6BAE5E',
@@ -119,19 +131,19 @@ class DashInterface:
                     'Etiquette_DPE': ['A', 'B', 'C', 'D', 'E', 'F', 'G']
                 }
                 if graph_type == 'scatter':
-                    fig = px.scatter(self.df, x=x_col, y=y_col, color='Etiquette_DPE',
+                    fig = px.scatter(filtered_df, x=x_col, y=y_col, color='Etiquette_DPE',
                                     title=f"Nuage de points ({x_col} vs {y_col}) par Etiquette DPE",
                                     color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'histogram':
-                    fig = px.histogram(self.df, x=x_col, color='Etiquette_DPE',
+                    fig = px.histogram(filtered_df, x=x_col, color='Etiquette_DPE',
                                     title=f"Histogramme de {x_col} par Etiquette DPE",
                                     color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'box':
-                    fig = px.box(self.df, x='Etiquette_DPE', y=y_col,
+                    fig = px.box(filtered_df, x='Etiquette_DPE', y=y_col,
                                 title=f"Boîte à moustaches de {y_col} par Etiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'bar':
-                    fig = px.bar(self.df, x=x_col, y=y_col, color='Etiquette_DPE',
+                    fig = px.bar(filtered_df, x=x_col, y=y_col, color='Etiquette_DPE',
                                 title=f"Graphique en barres ({x_col} vs {y_col}) par Etiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
                 

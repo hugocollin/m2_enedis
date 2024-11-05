@@ -38,7 +38,44 @@ class DashInterface:
     # Méthode pour afficher la page "Contexte"
     def render_context_page(self):
         return html.Div([
-            html.H1('Contexte'),
+            html.H2('Contexte'),
+
+            # Introduction au défi
+            html.H4("Introduction au défi"),
+            html.P("Ce projet s'inscrit dans le cadre du défi proposé par Enedis, et vise à montrer le lien entre les diagnostics de performance énergétique (DPE) et les consommations réelles d'électricité des logements."),
+
+            # Contexte climatique et enjeux énergétiques
+            html.H4("Présentation du DPE"),
+            html.P([
+                "Face aux défis du changement climatique et de la hausse des prix de l’énergie, la sobriété énergétique devient une priorité. Le DPE, outil central pour l'évaluation de l'efficacité énergétique des bâtiments, classe les logements de A (excellentes performances) à G (passoires énergétiques). Cette classification vise à sensibiliser les occupants et propriétaires sur les performances énergétiques et sur les travaux de rénovation nécessaires.",
+                html.Br(),  # Saut de ligne
+                "De plus, certaines restrictions légales encadrent désormais la location des logements les plus énergivores (classes F et G).",
+                html.Br(),  # Saut de ligne
+                "Le DPE est un outil simple permettant également d'informer les futurs locataires / acheteurs des performances énergétiques du logement et ainsi donner une indication quant aux coûts énergétiques qui lui sont associés."
+            ]),
+
+            # Image du DPE
+            html.Img(src='/assets/image_DPE.jpg', style={'width': '50%', 'height': 'auto'}),
+
+            # Problématique et objectifs du projet
+            html.H4("Problématique et objectifs du projet"),
+            html.P("Les objectifs principaux sont de quantifier l’impact des améliorations de DPE sur les économies d’énergie, et de vérifier la fiabilité des prévisions du DPE par rapport aux données réelles. L'enjeu est d'aider les particuliers et les décideurs à mieux évaluer les bénéfices d'une rénovation énergétique."),
+
+            # Structure de l'application
+            html.H4("Structure de l'application"),
+            html.P("L'application web comporte trois pages principales :"),
+            html.Ul([
+                html.Li("Page 'Contexte', présentant les objectifs du projet et le défi proposé par Enedis."),
+                html.Li("Page 'Graphiques', où l'utilisateur peut construire des graphiques interactifs pour explorer les données."),
+                html.Li("Page 'Prédiction', permettant de réaliser une prédiction de la classe DPE d'un logement en fonction d'un panel de critères.")
+            ]),
+
+            # Équipe de projet
+            html.H4("Équipe de projet"),
+            html.P("Ce projet est réalisé par trois étudiants du Master 2 SISE : Hugo Collin, Maxence Liogier et Antoine Oruezabala."),
+
+            # Bouton pour télécharger les données
+            html.H4("Données"),
             html.P("Cliquez sur le bouton ci-dessous pour télécharger les données en CSV :"),
             html.Button("Télécharger les données CSV", id="export-csv-context", n_clicks=0),
             dcc.Download(id="download-dataframe-csv-context")

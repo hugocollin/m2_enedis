@@ -44,3 +44,34 @@ class API:
         all_data = pd.DataFrame(all_data)
 
         return all_data
+    
+    # Méthode pour obtenir les coordonnées géographiques d'un code postal
+    def get_coordinates(code_postal):
+        url = 'https://nominatim.openstreetmap.org/search'
+        params = {
+            'postalcode': code_postal,
+            'country': 'France',
+            'format': 'json'
+        }
+        headers = {
+            'User-Agent': 'VotreNomApplication/1.0 (email@example.com)'
+        }
+        response = requests.get(url, params=params, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            if data:
+                return float(data[0]['lat']), float(data[0]['lon'])
+        return None, None
+
+    # Méthode pour obtenir l'altitude d'un point géographique
+    def get_altitude(lat, lon):
+        url = 'https://api.open-elevation.com/api/v1/lookup'
+        params = {
+            'locations': f'{lat},{lon}'
+        }
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            if 'results' in data and len(data['results']) > 0:
+                return data['results'][0]['elevation']
+        return None

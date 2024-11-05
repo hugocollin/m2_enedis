@@ -80,6 +80,26 @@ class Model:
             '2013-2021' if 2013 <= x <= 2021 else
             'Après 2021'
         )
+
+        # Récupération de l'altitude de la commune
+        latitude, longitude = API.get_coordinates(data["Code_postal_(BAN)"])
+        if latitude and longitude:
+            altitude = API.get_altitude(latitude, longitude)
+            if altitude is not None:
+                # Faire un case de l'ailtude en focntion de l'altitue
+                if altitude < 400:
+                    data["Classe_altitude"] = "inférieur à 400m"
+                elif altitude >= 400 and altitude <= 800:
+                    data["Classe_altitude"] = "400-800m"
+                else:
+                    data["Classe_altitude"] = "supérieur à 800m"
+                
+            else:
+                data["Classe_altitude"] = "inférieur à 400m"
+        else:
+            data["Classe_altitude"] = "inférieur à 400m"
+        
+        print(data["Classe_altitude"])
         
         # Application des mêmes transformations que lors de l'entraînement
         data = pd.get_dummies(data, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])

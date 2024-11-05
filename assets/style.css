@@ -7,58 +7,87 @@ body {
 }
 
 .tab {
-    padding: 10px;
+    padding: 12px 20px;
     font-weight: bold;
     background-color: #f9f9f9;
     border: 1px solid #d6d6d6;
-    border-radius: 5px;
+    border-radius: 10px;
     margin: 10px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
 }
 
-.tab.selected {
+.tab_selected {
     background-color: #0056b3;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 h1, h2, h3 {
     color: #0056b3;
+    text-align: center;
 }
 
 label {
     font-weight: bold;
-    margin-top: 10px;
+    margin-top: 15px;
+    display: block;
 }
 
 input, select, .dropdown {
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
+    padding: 12px 15px;
+    margin: 10px 0 20px 0;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus, .dropdown:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+    outline: none;
 }
 
 button {
-    background-color: #007bff;
-    color: white;
+    background-color: #0056b3;
+    color: #fff;
+    padding: 12px 20px;
     border: none;
-    padding: 10px 20px;
+    border-radius: 8px;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #003d80;
+    transform: translateY(-2px);
 }
 
-#dynamic-plot {
-    margin-top: 20px;
+button:active {
+    background-color: #002a5e;
+    transform: translateY(0);
 }
 
-.container {
-    max-width: 800px;
-    margin: auto;
+.dropdown {
+    border-radius: 8px;
+}
+
+.checkbox {
+    margin: 10px 0;
+}
+
+img {
+    border-radius: 8px;
+}
+
+.graph-container {
+    background-color: #fff;
     padding: 20px;
-    background: white;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }

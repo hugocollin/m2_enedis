@@ -99,8 +99,6 @@ class Model:
         else:
             data["Classe_altitude"] = "inférieur à 400m"
         
-        print(data["Classe_altitude"])
-        
         # Application des mêmes transformations que lors de l'entraînement
         data = pd.get_dummies(data, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])
         data = data.reindex(columns=feature_names, fill_value=0)

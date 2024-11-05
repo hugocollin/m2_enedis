@@ -29,8 +29,10 @@ class DashInterface:
         self.app.layout = html.Div([
             dcc.Tabs(id="tabs", value='tab-1', children=[
                 dcc.Tab(label='Contexte', value='tab-1', className='tab', selected_className='tab selected'),
-                dcc.Tab(label='Graphiques', value='tab-2', className='tab', selected_className='tab selected'),
-                dcc.Tab(label='Prédiction', value='tab-3', className='tab', selected_className='tab selected'),
+                dcc.Tab(label='Données', value='tab-2', className='tab', selected_className='tab selected'),
+                dcc.Tab(label='Graphiques', value='tab-3', className='tab', selected_className='tab selected'),
+                dcc.Tab(label='Cartographie', value='tab-4', className='tab', selected_className='tab selected'),
+                dcc.Tab(label='Prédiction', value='tab-5', className='tab', selected_className='tab selected'),
             ]),
             html.Div(id='tabs-content')
         ])
@@ -38,7 +40,7 @@ class DashInterface:
     # Méthode pour afficher la page "Contexte"
     def render_context_page(self):
         return html.Div([
-            html.H2('Contexte'),
+            html.H1('Contexte'),
 
             # Introduction au défi
             html.H4("Introduction au défi"),
@@ -72,13 +74,21 @@ class DashInterface:
 
             # Équipe de projet
             html.H4("Équipe de projet"),
-            html.P("Ce projet est réalisé par trois étudiants du Master 2 SISE : Hugo Collin, Maxence Liogier et Antoine Oruezabala."),
+            html.P("Ce projet est réalisé par trois étudiants du Master 2 SISE : Hugo Collin, Maxence Liogier et Antoine Oruezabala.")
+        ])
+
+    # Méthode pour afficher la page "Cartographie"
+    def render_donnees_page(self):
+        return html.Div([
+            html.H1('Données'),
 
             # Bouton pour télécharger les données
             html.H4("Données"),
             html.P("Cliquez sur le bouton ci-dessous pour télécharger les données en CSV :"),
             html.Button("Télécharger les données CSV", id="export-csv-context", n_clicks=0),
             dcc.Download(id="download-dataframe-csv-context")
+
+            # A terme il faudra aussi mettre en place un moyen de charger d'autres données et recalculer le modèle
         ])
 
     # Méthode pour afficher la page "Graphiques"
@@ -147,6 +157,12 @@ class DashInterface:
             html.A(id="download-link", download="graph.png", children="")  
         ])
     
+    # Méthode pour afficher la page "Cartographie"
+    def render_carto_page(self):
+        return html.Div([
+            html.H1('Cartographie interactive')
+        ])
+
     # Méthode pour afficher la page "Prédiction"
     def render_prediction_page(self):
         return html.Div([
@@ -225,8 +241,12 @@ class DashInterface:
             if tab == 'tab-1':
                 return self.render_context_page()
             elif tab == 'tab-2':
-                return self.render_graphs_page()
+                return self.render_donnees_page()
             elif tab == 'tab-3':
+                return self.render_graphs_page()
+            elif tab == 'tab-4':
+                return self.render_carto_page()
+            elif tab == 'tab-5':
                 return self.render_prediction_page()
         
         # Callback pour mettre à jour le graphique dynamique en fonction des filtres

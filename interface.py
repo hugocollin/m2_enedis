@@ -54,28 +54,28 @@ class DashInterface:
                     {
                         "label": html.Div([
                             html.Span("Nuage de Points", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/images/nuagepoints.png", height=30)
+                            html.Img(src="/assets/images/nuagepoints.png", height=30)
                         ], style={'display': 'inline-block', 'text-align': 'center'}),
                         "value": "scatter",
                     },
                     {
                         "label": html.Div([
                             html.Span("Histogramme", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/images/histogramme.png", height=30)
+                            html.Img(src="/assets/images/histogramme.png", height=30)
                         ], style={'display': 'inline-block', 'text-align': 'center'}),
                         "value": "histogram",
                     },
                     {
                         "label": html.Div([
                             html.Span("Boîte à Moustache", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/images/boxplot.png", height=30)
+                            html.Img(src="/assets/images/boxplot.png", height=30)
                         ], style={'display': 'inline-block', 'text-align': 'center'}),
                         "value": "box",
                     },
                     {
                         "label": html.Div([
                             html.Span("Graphique en ligne", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/images/line.png", height=30)
+                            html.Img(src="/assets/images/line.png", height=30)
                         ], style={'display': 'inline-block', 'text-align': 'center'}),
                         "value": "line",
                     },

@@ -15,12 +15,11 @@ class DashInterface:
     """
 
     # Constructeur de la classe
-    def __init__(self, dataframe, county):
+    def __init__(self, dataframe):
         self.app = dash.Dash(__name__, external_stylesheets=['/assets/style.css'])
         self.app.title = "Projet Enedis"
         self.server = self.app.server
         self.df = dataframe
-        self.county = county
         self.current_fig = None
         self.setup_layout()
         self.setup_callbacks()
@@ -231,7 +230,7 @@ class DashInterface:
             prevent_initial_call=True,
         )
         def download_csv_context(n_clicks):
-            return dcc.send_data_frame(self.df.to_csv, f"data_{self.county}.csv", index=False)
+            return dcc.send_data_frame(self.df.to_csv, f"data/data_69.csv", index=False)
         
         # Callback pour faire une prédiction
         @self.app.callback(

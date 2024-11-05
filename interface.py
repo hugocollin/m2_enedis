@@ -48,16 +48,40 @@ class DashInterface:
     def render_graphs_page(self):
         return html.Div([
             html.H1('Graphiques interactifs'),
-            dcc.Dropdown(
+            dcc.RadioItems(
                 id='graph-type',
                 options=[
-                    {'label': 'Nuage de points', 'value': 'scatter'},
-                    {'label': 'Histogramme', 'value': 'histogram'},
-                    {'label': 'Boîte à moustaches', 'value': 'box'},
-                    {'label': 'Graphique en barres', 'value': 'bar'},
+                    {
+                        "label": html.Div([
+                            html.Span("Nuage de Points", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
+                            html.Img(src="/images/nuagepoints.png", height=30)
+                        ], style={'display': 'inline-block', 'text-align': 'center'}),
+                        "value": "scatter",
+                    },
+                    {
+                        "label": html.Div([
+                            html.Span("Histogramme", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
+                            html.Img(src="/images/histogramme.png", height=30)
+                        ], style={'display': 'inline-block', 'text-align': 'center'}),
+                        "value": "histogram",
+                    },
+                    {
+                        "label": html.Div([
+                            html.Span("Boîte à Moustache", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
+                            html.Img(src="/images/boxplot.png", height=30)
+                        ], style={'display': 'inline-block', 'text-align': 'center'}),
+                        "value": "box",
+                    },
+                    {
+                        "label": html.Div([
+                            html.Span("Graphique en ligne", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
+                            html.Img(src="/images/line.png", height=30)
+                        ], style={'display': 'inline-block', 'text-align': 'center'}),
+                        "value": "line",
+                    },
                 ],
-                value='scatter',
-                placeholder="Choisir le type de graphique"
+                value="scatter",
+                labelStyle={"display": "inline-block", "text-align": "center", "margin": "10px"}
             ),
             dcc.Dropdown(
                 id='x-axis',
@@ -71,12 +95,16 @@ class DashInterface:
                 value=self.df.columns[1] if len(self.df.columns) > 1 else None,
                 placeholder="Choisir l'axe des Y"
             ),
-            dcc.Dropdown(
+
+            # Checkboxes pour filtrer par Etiquette_DPE
+            html.Label('Filtrer par Etiquette DPE :'),
+            dcc.Checklist(
                 id='data-filter',
-                options=[{'label': label, 'value': label} for label in self.df['Etiquette_DPE'].unique()],
-                multi=True,
-                placeholder="Filtrer par Etiquette DPE"
+                options=[{'label': label, 'value': label} for label in sorted(self.df['Etiquette_DPE'].unique())],
+                value=sorted(self.df['Etiquette_DPE'].unique()),  
+                inline=True
             ),
+            
             dcc.Graph(id='dynamic-plot'),
             html.Button("Exporter en PNG", id="export-png", n_clicks=0),
             html.A(id="download-link", download="graph.png", children="")  
@@ -163,11 +191,16 @@ class DashInterface:
                 return self.render_graphs_page()
             elif tab == 'tab-3':
                 return self.render_prediction_page()
-
-        # Callback pour mettre à jour le graphique dynamique
+        
+        # Callback pour mettre à jour le graphique dynamique en fonction des filtres
         @self.app.callback(
             Output('dynamic-plot', 'figure'),
-            [Input('x-axis', 'value'), Input('y-axis', 'value'), Input('graph-type', 'value'), Input('data-filter', 'value')]
+            [
+                Input('x-axis', 'value'), 
+                Input('y-axis', 'value'), 
+                Input('graph-type', 'value'), 
+                Input('data-filter', 'value'),
+            ]
         )
         def update_dynamic_plot(x_col, y_col, graph_type, filter_values):
             if x_col and y_col:
@@ -200,11 +233,11 @@ class DashInterface:
                     fig = px.box(filtered_df, x='Etiquette_DPE', y=y_col,
                                 title=f"Boîte à moustaches de {y_col} par Etiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
-                elif graph_type == 'bar':
-                    fig = px.bar(filtered_df, x=x_col, y=y_col, color='Etiquette_DPE',
-                                title=f"Graphique en barres ({x_col} vs {y_col}) par Etiquette DPE",
+                elif graph_type == 'line':
+                    fig = px.line(filtered_df, x=x_col, y=y_col, color='Etiquette_DPE',
+                                title=f"Graphique en ligne ({x_col} vs {y_col}) par Etiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
-                
+
                 self.current_fig = fig  
                 return fig
             return {}

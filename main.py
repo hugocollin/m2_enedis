@@ -9,6 +9,10 @@ def main(county):
     
     # Récupération des données
     df = pd.read_csv(f'data/data_{county}.csv', sep='|')
+
+    # # [TEMP] Entraînement du modèle 
+    # from model import Model
+    # Model.train(df, local_data=True, county=county)
     
     # Instanciation et exécution de l'interface Dash
     interface = DashInterface(df, county)

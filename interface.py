@@ -11,7 +11,7 @@ import plotly.io as pio
 
 class DashInterface:
     """
-    Interface Dash pour visualiser les données et faire des prédictions
+    Interface Dash pour le projet Enedis
     """
 
     # Constructeur de la classe
@@ -99,69 +99,124 @@ class DashInterface:
 
     # Méthode pour afficher la page "Graphiques"
     def render_graphs_page(self):
-        return html.Div([
-            html.H1('Graphiques interactifs'),
-            dcc.RadioItems(
-                id='graph-type',
-                options=[
-                    {
-                        "label": html.Div([
-                            html.Span("Nuage de Points", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/assets/images/nuagepoints.png", height=30)
-                        ], style={'display': 'inline-block', 'text-align': 'center'}),
-                        "value": "scatter",
-                    },
-                    {
-                        "label": html.Div([
-                            html.Span("Histogramme", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/assets/images/histogramme.png", height=30)
-                        ], style={'display': 'inline-block', 'text-align': 'center'}),
-                        "value": "histogram",
-                    },
-                    {
-                        "label": html.Div([
-                            html.Span("Boîte à Moustache", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/assets/images/boxplot.png", height=30)
-                        ], style={'display': 'inline-block', 'text-align': 'center'}),
-                        "value": "box",
-                    },
-                    {
-                        "label": html.Div([
-                            html.Span("Graphique en ligne", style={'font-size': 15, 'display': 'block', 'text-align': 'center'}),
-                            html.Img(src="/assets/images/line.png", height=30)
-                        ], style={'display': 'inline-block', 'text-align': 'center'}),
-                        "value": "line",
-                    },
-                ],
-                value="scatter",
-                labelStyle={"display": "inline-block", "text-align": "center", "margin": "10px"}
-            ),
-            dcc.Dropdown(
-                id='x-axis',
-                options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Etiquette_DPE']],
-                value=self.df.columns[0] if not self.df.empty else None,
-                placeholder="Choisir l'axe des X"
-            ),
-            dcc.Dropdown(
-                id='y-axis',
-                options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Etiquette_DPE']],
-                value=self.df.columns[1] if len(self.df.columns) > 1 else None,
-                placeholder="Choisir l'axe des Y"
-            ),
+        return html.Div(
+            className='graph_container',
+            children=[
+                html.H2('Types de graphique'),
+                dcc.RadioItems(
+                    id='graph-type',
+                    className='radio-container',
+                    options=[
+                        {
+                            "label": html.Div([
+                                html.Span("Histogramme", className='radio-option-text'),
+                                html.Img(src="/assets/images/histogramme.png", className='radio-option-image')
+                            ], className='radio-option'),
+                            "value": "histogram",
+                        },
+                        {
+                            "label": html.Div([
+                                html.Span("Graphique en ligne", className='radio-option-text'),
+                                html.Img(src="/assets/images/graphique_ligne.png", className='radio-option-image')
+                            ], className='radio-option'),
+                            "value": "line",
+                        },
+                        {
+                            "label": html.Div([
+                                html.Span("Nuage de points", className='radio-option-text'),
+                                html.Img(src="/assets/images/nuage_points.png", className='radio-option-image')
+                            ], className='radio-option'),
+                            "value": "scatter",
+                        },
+                        {
+                            "label": html.Div([
+                                html.Span("Boîte à moustache", className='radio-option-text'),
+                                html.Img(src="/assets/images/boite_moustache.png", className='radio-option-image')
+                            ], className='radio-option'),
+                            "value": "box",
+                        }
+                    ],
+                    value="histogram",
+                ),
+                html.H2('Axes du graphique'),
+                html.Div(
+                    className='dropdown-container',  # Ajout de la classe CSS
+                    children=[
+                        html.Div(
+                            className='dropdown-item',
+                            children=[
+                                html.Label("Abscisse", className='dropdown-label'),
+                                dcc.Dropdown(
+                                    id='x-axis',
+                                    options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Etiquette_DPE']],
+                                    value="Période_construction"
+                                ),
+                            ]
+                        ),
+                        html.Div(
+                            className='dropdown-item',
+                            children=[
+                                html.Label("Ordonnée", className='dropdown-label'),
+                                dcc.Dropdown(
+                                    id='y-axis',
+                                    options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Etiquette_DPE']],
+                                    value="Surface_habitable_logement"
+                                ),
+                            ]
+                        ),
+                    ]
+                ),
 
-            # Checkboxes pour filtrer par Etiquette_DPE
-            html.Label('Filtrer par Etiquette DPE :'),
-            dcc.Checklist(
-                id='data-filter',
-                options=[{'label': label, 'value': label} for label in sorted(self.df['Etiquette_DPE'].unique())],
-                value=sorted(self.df['Etiquette_DPE'].unique()),  
-                inline=True
-            ),
-            
-            dcc.Graph(id='dynamic-plot'),
-            html.Button("Exporter en PNG", id="export-png", n_clicks=0),
-            html.A(id="download-link", download="graph.png", children="")  
-        ])
+                html.H2('Filtres par étiquette DPE'),
+                html.Div(
+                    className='filter-container',
+                    children=[
+                        dcc.Checklist(
+                            id='data-filter',
+                            options=[
+                                {
+                                    'label': html.Img(src='/assets/images/A.png', className='filter-icon'),
+                                    'value': 'A'
+                                },
+                                {
+                                    'label': html.Img(src='/assets/images/B.png', className='filter-icon'),
+                                    'value': 'B'
+                                },
+                                {
+                                    'label': html.Img(src='/assets/images/C.png', className='filter-icon'),
+                                    'value': 'C'
+                                },
+                                {
+                                    'label': html.Img(src='/assets/images/D.png', className='filter-icon'),
+                                    'value': 'D'
+                                },
+                                {
+                                    'label': html.Img(src='/assets/images/E.png', className='filter-icon'),
+                                    'value': 'E'
+                                },
+                                {
+                                    'label': html.Img(src='/assets/images/F.png', className='filter-icon'),
+                                    'value': 'F'
+                                },
+                                {
+                                    'label': html.Img(src='/assets/images/G.png', className='filter-icon'),
+                                    'value': 'G'
+                                }
+                            ],
+                            value=['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                            inline=True,
+                            className='filter-checklist'
+                        ),
+                    ]
+                ),
+                
+                html.H2('Graphique dynamique'),
+                dcc.Graph(id='dynamic-plot'),
+
+                html.Button("Exporter en PNG", id="export-png", n_clicks=0),
+                html.A(id="download-link", download="graph.png", children="")
+            ]
+        )
     
     # Méthode pour afficher la page "Cartographie"
     def render_carto_page(self):

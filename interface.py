@@ -270,7 +270,7 @@ class DashInterface:
                 })
 
                 prediction = Model.predict(data)
-                return html.H3(f"Votre logement est classé en catégorie : {prediction}")
+                return html.H3(f"Votre logement est classé en catégorie : {prediction}"), html.Img(src=f'/assets/DPE_{prediction}.png', style={'width': '10%'})
 
     # Méthode pour exécuter l'interface Dash
     def run(self):

@@ -57,7 +57,7 @@ class DashInterface:
             ]),
 
             # Image du DPE
-            html.Img(src='/assets/image_DPE.jpg', style={'width': '50%', 'height': 'auto'}),
+            html.Img(src='/assets/images/image_DPE.jpg', style={'width': '50%', 'height': 'auto'}),
 
             # Problématique et objectifs du projet
             html.H4("Problématique et objectifs du projet"),

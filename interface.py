@@ -3,8 +3,6 @@ from model import Model
 import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
-import folium
-from folium.plugins import MarkerCluster
 import os
 import pandas as pd
 import plotly.express as px
@@ -299,7 +297,8 @@ class DashInterface:
         return html.Div(
             className='visuals_container',
             children=[
-                html.H2('Carte des étiquettes DPE'),
+                html.H2('Carte dynamique de la répartition des étiquettes DPE'),
+                html.P('Pour des raisons de performances au maximum 100 000 points sont affichés.', style={'font-style':'italic', 'text-align':'center'}),
                 html.Div([
                     dcc.Checklist(
                         id='data-filter',

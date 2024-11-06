@@ -42,21 +42,18 @@ class DashInterface:
         return html.Div(
             className='container',
             children=[
-                # Introduction au défi
                 html.H2("Introduction au défi"),
                 html.P("Ce projet s'inscrit dans le cadre du défi proposé par Enedis, et vise à montrer le lien entre les diagnostics de performance énergétique (DPE) et les consommations réelles d'électricité des logements."),
 
-                # Contexte climatique et enjeux énergétiques
                 html.H2("Présentation du DPE"),
                 html.P([
                     "Face aux défis du changement climatique et de la hausse des prix de l’énergie, la sobriété énergétique devient une priorité. Le DPE, outil central pour l'évaluation de l'efficacité énergétique des bâtiments, classe les logements de A (excellentes performances) à G (passoires énergétiques). Cette classification vise à sensibiliser les occupants et propriétaires sur les performances énergétiques et sur les travaux de rénovation nécessaires.",
-                    html.Br(),  # Saut de ligne
+                    html.Br(),
                     "De plus, certaines restrictions légales encadrent désormais la location des logements les plus énergivores (classes F et G).",
-                    html.Br(),  # Saut de ligne
+                    html.Br(),
                     "Le DPE est un outil simple permettant également d'informer les futurs locataires / acheteurs des performances énergétiques du logement et ainsi donner une indication quant aux coûts énergétiques qui lui sont associés."
                 ]),
 
-                # Image du DPE
                 html.Div(
                         className='image-container',
                         children=[
@@ -64,11 +61,9 @@ class DashInterface:
                         ]
                     ),
 
-                # Problématique et objectifs du projet
                 html.H2("Problématique et objectifs du projet"),
                 html.P("Les objectifs principaux sont de quantifier l’impact des améliorations de DPE sur les économies d’énergie, et de vérifier la fiabilité des prévisions du DPE par rapport aux données réelles. L'enjeu est d'aider les particuliers et les décideurs à mieux évaluer les bénéfices d'une rénovation énergétique."),
 
-                # Structure de l'application
                 html.H2("Structure de l'application"),
                 html.P("L'application web comporte trois pages principales :"),
                 html.Ul([
@@ -77,7 +72,6 @@ class DashInterface:
                     html.Li("Page 'Prédiction', permettant de réaliser une prédiction de la classe DPE d'un logement en fonction d'un panel de critères.")
                 ]),
 
-                # Équipe de projet
                 html.H2("Équipe de projet"),
                 html.P("Ce projet est réalisé par trois étudiants du Master 2 SISE : Hugo Collin, Maxence Liogier et Antoine Oruezabala.")
             ]
@@ -86,14 +80,12 @@ class DashInterface:
     # Méthode pour afficher la page "Cartographie"
     def render_donnees_page(self):
         return html.Div(
-            className='container',  # Ajout de la classe CSS
+            className='container',
             children=[
                 html.H2('Téléchargement des données'),
                 html.P("Vous pouvez télécharger les données utilisées pour ce projet en cliquant sur le bouton ci-dessous. Ces données contiennent les informations sur les logements du département du Rhône."),
                 html.Button("Télécharger les données au format CSV", id="export-csv-context", n_clicks=0),
                 dcc.Download(id="download-dataframe-csv-context")
-        
-                # A terme il faudra aussi mettre en place un moyen de charger d'autres données et recalculer le modèle
             ]
         )
 
@@ -103,47 +95,52 @@ class DashInterface:
             className='graph_container',
             children=[
                 html.H2('Types de graphique'),
-                dcc.RadioItems(
-                    id='graph-type',
-                    className='radio-container',
-                    options=[
-                        {
-                            "label": html.Div([
-                                html.Span("Histogramme", className='radio-option-text'),
-                                html.Img(src="/assets/images/histogramme.png", className='radio-option-image')
-                            ], className='radio-option'),
-                            "value": "histogram",
-                        },
-                        {
-                            "label": html.Div([
-                                html.Span("Graphique en ligne", className='radio-option-text'),
-                                html.Img(src="/assets/images/graphique_ligne.png", className='radio-option-image')
-                            ], className='radio-option'),
-                            "value": "line",
-                        },
-                        {
-                            "label": html.Div([
-                                html.Span("Nuage de points", className='radio-option-text'),
-                                html.Img(src="/assets/images/nuage_points.png", className='radio-option-image')
-                            ], className='radio-option'),
-                            "value": "scatter",
-                        },
-                        {
-                            "label": html.Div([
-                                html.Span("Boîte à moustache", className='radio-option-text'),
-                                html.Img(src="/assets/images/boite_moustache.png", className='radio-option-image')
-                            ], className='radio-option'),
-                            "value": "box",
-                        }
-                    ],
-                    value="histogram",
-                ),
+                html.Div([
+                    html.Div(
+                        className='option-box graph-type-option',
+                        id='graph-type-histogram',
+                        children=[
+                            html.Img(src="/assets/images/histogramme.png", className='graph-option-image'),
+                            html.Span("Histogramme", className='graph-option-text')
+                        ],
+                        n_clicks=0
+                    ),
+                    html.Div(
+                        className='option-box graph-type-option',
+                        id='graph-type-line',
+                        children=[
+                            html.Img(src="/assets/images/graphique_ligne.png", className='graph-option-image'),
+                            html.Span("Graphique en ligne", className='graph-option-text')
+                        ],
+                        n_clicks=0
+                    ),
+                    html.Div(
+                        className='option-box graph-type-option',
+                        id='graph-type-scatter',
+                        children=[
+                            html.Img(src="/assets/images/nuage_points.png", className='graph-option-image'),
+                            html.Span("Nuage de points", className='graph-option-text')
+                        ],
+                        n_clicks=0
+                    ),
+                    html.Div(
+                        className='option-box graph-type-option',
+                        id='graph-type-box',
+                        children=[
+                            html.Img(src="/assets/images/boite_moustache.png", className='graph-option-image'),
+                            html.Span("Boîte à moustaches", className='graph-option-text')
+                        ],
+                        n_clicks=0
+                    ),
+                ], className='graph-type-container'),
+                dcc.Store(id='selected-graph-type', data='histogram'),
+
                 html.H2('Axes du graphique'),
                 html.Div(
-                    className='dropdown-container',  # Ajout de la classe CSS
+                    className='axes-container',
                     children=[
                         html.Div(
-                            className='dropdown-item',
+                            className='option-box dropdown-item',
                             children=[
                                 html.Label("Abscisse", className='dropdown-label'),
                                 dcc.Dropdown(
@@ -154,7 +151,7 @@ class DashInterface:
                             ]
                         ),
                         html.Div(
-                            className='dropdown-item',
+                            className='option-box dropdown-item',
                             children=[
                                 html.Label("Ordonnée", className='dropdown-label'),
                                 dcc.Dropdown(
@@ -331,13 +328,39 @@ class DashInterface:
             elif tab == 'tab-5':
                 return self.render_prediction_page()
         
-        # Callback pour mettre à jour le graphique dynamique en fonction des filtres
+        # Callback pour mettre à jour le type de graphique sélectionné
+        @self.app.callback(
+            Output('selected-graph-type', 'data'),
+            [Input('graph-type-histogram', 'n_clicks'),
+            Input('graph-type-line', 'n_clicks'),
+            Input('graph-type-scatter', 'n_clicks'),
+            Input('graph-type-box', 'n_clicks')],
+            [State('selected-graph-type', 'data')]
+        )
+        def update_graph_type(n_hist, n_line, n_scatter, n_box, current_type):
+            ctx = dash.callback_context
+
+            if not ctx.triggered:
+                return current_type
+            else:
+                button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+                if button_id == 'graph-type-histogram':
+                    return 'histogram'
+                elif button_id == 'graph-type-line':
+                    return 'line'
+                elif button_id == 'graph-type-scatter':
+                    return 'scatter'
+                elif button_id == 'graph-type-box':
+                    return 'box'
+            return current_type
+
+        # Callback pour mettre à jour le graphique dynamique
         @self.app.callback(
             Output('dynamic-plot', 'figure'),
             [
                 Input('x-axis', 'value'), 
                 Input('y-axis', 'value'), 
-                Input('graph-type', 'value'), 
+                Input('selected-graph-type', 'data'), 
                 Input('data-filter', 'value'),
             ]
         )

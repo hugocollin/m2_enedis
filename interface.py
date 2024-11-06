@@ -1,13 +1,13 @@
 from model import Model
 
-import base64
 import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
+import folium
+from folium.plugins import MarkerCluster
 import os
 import pandas as pd
 import plotly.express as px
-import plotly.io as pio
 
 class DashInterface:
     """
@@ -299,7 +299,8 @@ class DashInterface:
         return html.Div(
             className='visuals_container',
             children=[
-                html.P('⌛ La cartographie interactive sera disponible prochainement ⌛', style={'font-style':'italic', 'text-align':'center'}),
+                html.H2('Carte des étiquettes DPE'),
+                dcc.Graph(id='map-plotly')
             ]
         )
 
@@ -488,6 +489,20 @@ class DashInterface:
         def download_csv_context(n_clicks):
             return dcc.send_data_frame(self.df.to_csv, f"/assets/data_69.csv", index=False)
         
+        # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
+        @self.app.callback(
+            Output('visuals-tabs-content', 'children'),
+            [Input('visuals-subtabs', 'value')]
+        )
+        # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
+        def render_visual_subtabs(subtab):
+            if subtab == 'subtab-1':
+                return self.render_stats_page()
+            elif subtab == 'subtab-2':
+                return self.render_graphs_page()
+            elif subtab == 'subtab-3':
+                return self.render_carto_page()
+        
         # Dictionnaire de libellés pour les colonnes
         COLUMN_LABELS = {
             'Conso_5_usages_é_finale': 'consommation totale',
@@ -631,31 +646,68 @@ class DashInterface:
             Input("btn_png", "n_clicks"),
             prevent_initial_call=True
         )
-        # Méthode pour télécharger le graphique en PNG
-        def download_plot_png(n_clicks):
-            # Vérifiez que le graphique est disponible
-            if hasattr(self, 'current_fig') and self.current_fig:
-                fig = self.current_fig
-                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
-                    tmp_file_path = tmp_file.name
-                    fig.write_image(tmp_file_path, format="png")
-                return dcc.send_file(tmp_file_path, filename="graphique.png")
+        # # Méthode pour télécharger le graphique en PNG
+        # def download_plot_png(n_clicks):
+        #     # Vérifiez que le graphique est disponible
+        #     if hasattr(self, 'current_fig') and self.current_fig:
+        #         fig = self.current_fig
+        #         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
+        #             tmp_file_path = tmp_file.name
+        #             fig.write_image(tmp_file_path, format="png")
+        #         return dcc.send_file(tmp_file_path, filename="graphique.png")
             
-            return {}
-        
-        # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
+        #     return {}
+
+        # Callback pour mettre à jour la carte avec Plotly
         @self.app.callback(
-            Output('visuals-tabs-content', 'children'),
-            [Input('visuals-subtabs', 'value')]
+            Output('map-plotly', 'figure'),  # Changer l'Output pour le dcc.Graph
+            Input('visuals-subtabs', 'value')  # Déclencheur basé sur la sélection du sous-onglet
         )
-        # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
-        def render_visual_subtabs(subtab):
-            if subtab == 'subtab-1':
-                return self.render_stats_page()
-            elif subtab == 'subtab-2':
-                return self.render_graphs_page()
-            elif subtab == 'subtab-3':
-                return self.render_carto_page()
+        def generate_map_plotly(subtabs_value):
+            # Vérifiez si le sous-onglet "Cartographie" est sélectionné
+            if subtabs_value != 'subtab-3':
+                return dash.no_update
+
+            data = self.df.copy()
+
+            # Suppression des lignes où '_geopoint' est NaN
+            data = data.dropna(subset=['_geopoint'])
+
+            # Séparation des coordonnées lat et lon
+            split_coords = data['_geopoint'].str.split(',', expand=True)
+
+            # Nettoyer les espaces éventuels et convertir en float
+            split_coords = split_coords.apply(lambda col: col.str.strip())
+            data['lat'] = pd.to_numeric(split_coords[0], errors='coerce')
+            data['lon'] = pd.to_numeric(split_coords[1], errors='coerce')
+
+             # Renommer la colonne 'Code_postal_(BAN)' en 'Code postal'
+            data = data.rename(columns={'Code_postal_(BAN)': 'Code postal', 'Etiquette_DPE': 'Étiquette DPE'})
+
+            # Création de la figure Plotly
+            fig = px.scatter_mapbox(
+                data,
+                lat='lat',
+                lon='lon',
+                hover_name='Nom__commune_(BAN)',
+                hover_data={
+                    'Code postal': True,
+                    'Étiquette DPE': True,
+                    'lat': False,
+                    'lon': False
+                },
+                color='Étiquette DPE',
+                zoom=10,
+                height=600,
+            )
+
+            # Configuration de la carte
+            fig.update_layout(
+                mapbox_style="carto-positron",  # Style de la carte sans besoin de token Mapbox
+                margin={"r":0,"t":50,"l":0,"b":0}
+            )
+
+            return fig
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions"
         @self.app.callback(

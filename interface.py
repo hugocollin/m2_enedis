@@ -300,6 +300,44 @@ class DashInterface:
             className='visuals_container',
             children=[
                 html.H2('Carte des étiquettes DPE'),
+                html.Div([
+                    dcc.Checklist(
+                        id='data-filter',
+                        options=[
+                            {
+                                'label': html.Img(src='/assets/images/A.png', className='filter-icon'),
+                                'value': 'A'
+                            },
+                            {
+                                'label': html.Img(src='/assets/images/B.png', className='filter-icon'),
+                                'value': 'B'
+                            },
+                            {
+                                'label': html.Img(src='/assets/images/C.png', className='filter-icon'),
+                                'value': 'C'
+                            },
+                            {
+                                'label': html.Img(src='/assets/images/D.png', className='filter-icon'),
+                                'value': 'D'
+                            },
+                            {
+                                'label': html.Img(src='/assets/images/E.png', className='filter-icon'),
+                                'value': 'E'
+                            },
+                            {
+                                'label': html.Img(src='/assets/images/F.png', className='filter-icon'),
+                                'value': 'F'
+                            },
+                            {
+                                'label': html.Img(src='/assets/images/G.png', className='filter-icon'),
+                                'value': 'G'
+                            }
+                        ],
+                        value=['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                        inline=True,
+                        className='filter-checklist'
+                    ),
+                ], className='filter-container'),
                 dcc.Graph(id='map-plotly')
             ]
         )
@@ -660,31 +698,32 @@ class DashInterface:
 
         # Callback pour mettre à jour la carte avec Plotly
         @self.app.callback(
-            Output('map-plotly', 'figure'),  # Changer l'Output pour le dcc.Graph
-            Input('visuals-subtabs', 'value')  # Déclencheur basé sur la sélection du sous-onglet
+            Output('map-plotly', 'figure'),
+            [
+                Input('visuals-subtabs', 'value'),
+                Input('data-filter', 'value')
+            ]
         )
-        def generate_map_plotly(subtabs_value):
-            # Vérifiez si le sous-onglet "Cartographie" est sélectionné
+        def generate_map_plotly(subtabs_value, selected_dpe):
             if subtabs_value != 'subtab-3':
                 return dash.no_update
 
             data = self.df.copy()
 
-            # Suppression des lignes où '_geopoint' est NaN
+            # [TEMP]
+            if len(data) > 100000:
+                data = data.sample(100000, random_state=42)
+
             data = data.dropna(subset=['_geopoint'])
-
-            # Séparation des coordonnées lat et lon
             split_coords = data['_geopoint'].str.split(',', expand=True)
-
-            # Nettoyer les espaces éventuels et convertir en float
             split_coords = split_coords.apply(lambda col: col.str.strip())
             data['lat'] = pd.to_numeric(split_coords[0], errors='coerce')
             data['lon'] = pd.to_numeric(split_coords[1], errors='coerce')
-
-             # Renommer la colonne 'Code_postal_(BAN)' en 'Code postal'
             data = data.rename(columns={'Code_postal_(BAN)': 'Code postal', 'Etiquette_DPE': 'Étiquette DPE'})
 
-            # Création de la figure Plotly
+            if selected_dpe:
+                data = data[data['Étiquette DPE'].isin(selected_dpe)]
+
             fig = px.scatter_mapbox(
                 data,
                 lat='lat',
@@ -697,13 +736,24 @@ class DashInterface:
                     'lon': False
                 },
                 color='Étiquette DPE',
+                color_discrete_map={
+                    'A': '#479E72',
+                    'B': '#6BAE5E',
+                    'C': '#ADCA7D',
+                    'D': '#F3E84F',
+                    'E': '#E7B741',
+                    'F': '#DE8647',
+                    'G': '#C6362C'
+                },
+                category_orders={
+                    'Étiquette DPE': ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+                },
                 zoom=10,
                 height=600,
             )
 
-            # Configuration de la carte
             fig.update_layout(
-                mapbox_style="carto-positron",  # Style de la carte sans besoin de token Mapbox
+                mapbox_style="carto-positron",
                 margin={"r":0,"t":50,"l":0,"b":0}
             )
 

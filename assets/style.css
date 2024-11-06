@@ -216,13 +216,14 @@ input:focus, select:focus, .dropdown:focus {
     margin: 20px auto;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    width: 450px;
+    padding: 10px 20px;
+    width: fit-content;
 }
 
 .filter-checklist {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
     margin-top: 10px;
 }
 

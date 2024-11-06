@@ -8,7 +8,7 @@ def main():
     """
     
     # Récupération des données
-    df = pd.read_csv(f'data/data_69.csv', sep='|')
+    df = pd.read_csv(f'assets/data_69.csv', sep='|')
 
     # # [TEMP] Entraînement du modèle 
     # from model import Model

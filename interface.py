@@ -521,8 +521,9 @@ class DashInterface:
             prevent_initial_call=True,
         )
         # Méthode pour télécharger les données en CSV
-        def download_csv_context(n_clicks):
-            return dcc.send_data_frame(self.df.to_csv, f"data_69.csv", index=False)
+        def download_csv(n_clicks):
+            if n_clicks:
+                return dcc.send_file('assets/data_69.csv')
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
         @self.app.callback(

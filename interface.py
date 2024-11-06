@@ -30,9 +30,8 @@ class DashInterface:
             dcc.Tabs(id="tabs", value='tab-1', children=[
                 dcc.Tab(label='Contexte', value='tab-1', className='tab', selected_className='tab_selected'),
                 dcc.Tab(label='Données', value='tab-2', className='tab', selected_className='tab_selected'),
-                dcc.Tab(label='Graphiques', value='tab-3', className='tab', selected_className='tab_selected'),
-                dcc.Tab(label='Cartographie', value='tab-4', className='tab', selected_className='tab_selected'),
-                dcc.Tab(label='Prédiction', value='tab-5', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Visualisations', value='tab-3', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Prédiction', value='tab-4', className='tab', selected_className='tab_selected'),
             ]),
             html.Div(id='tabs-content')
         ])
@@ -77,7 +76,7 @@ class DashInterface:
             ]
         )
 
-    # Méthode pour afficher la page "Cartographie"
+    # Méthode pour afficher la page "Données"
     def render_donnees_page(self):
         return html.Div(
             className='container',
@@ -89,6 +88,16 @@ class DashInterface:
             ]
         )
 
+    # Méthode pour afficher la page "Visualisations"
+    def render_visuals_page(self):
+        return html.Div([
+            dcc.Tabs(id="visuals-subtabs", value='subtab-1', children=[
+                dcc.Tab(label='Graphiques', value='subtab-1', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Cartographie', value='subtab-2', className='tab', selected_className='tab_selected')
+            ]),
+            html.Div(id='visuals-tabs-content')
+        ])
+    
     # Méthode pour afficher la page "Graphiques"
     def render_graphs_page(self):
         return html.Div(
@@ -233,6 +242,83 @@ class DashInterface:
             ]),
             html.Div(id='prediction-tabs-content')
         ])
+    
+    # Méthode pour afficher la page "Prédiction du DPE"
+    def render_prediction_page_dpe(self):
+        return html.Div(
+            className='container',
+            children=[
+                html.H2('Informations générales sur le logement'),
+                html.Div([
+                    html.Label('Code postal'),
+                    dcc.Input(id='code-postal', type='text', placeholder='Code postal'),
+                ]),
+                html.Div([
+                    html.Label('Année de construction'),
+                    dcc.Input(id='annee-construction', type='number', placeholder='Année de construction'),
+                ]),
+                html.Div([
+                    html.Label('Type de logement'),
+                    dcc.Dropdown(
+                        id='type-batiment',
+                        options=[{'label': 'Maison', 'value': 'Maison'}, {'label': 'Appartement', 'value': 'Appartement'}, {'label': 'Immeuble', 'value': 'Immeuble'}],
+                        placeholder='Type de logement'
+                    ),
+                ]),
+                html.Div([
+                    html.Label('Surface habitable (en m²)'),
+                    dcc.Input(id='surface-habitable', type='number', placeholder='Surface habitable'),
+                ]),
+                html.Div([
+                    html.Label('Nombre d\'étage(s)'),
+                    dcc.Input(id='nombre-etage', type='number', placeholder='Nombre d\'étage(s)'),
+                ]),
+                html.Div([
+                    html.Label('Hauteur sous plafond (en m)'),
+                    dcc.Input(id='hauteur-plafond', type='number', placeholder='Hauteur sous plafond'),
+                ]),
+                html.H2('Informations de consommation du logement'),
+                html.Div([
+                    html.Label('Type d\'énergie du chauffage'),
+                    dcc.Dropdown(
+                        id='type-energie-chauffage',
+                        options=[{'label': 'Électricité', 'value': 'Électricité'}, {'label': 'Gaz naturel', 'value': 'Gaz naturel'}, {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'}, {'label': 'Fioul domestique', 'value': 'Fioul domestique'}, {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'}, {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'}, {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'}, {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'}, {'label': 'GPL', 'value': 'GPL'}, {'label': 'Propane', 'value': 'Propane'}, {'label': 'Charbon', 'value': 'Charbon'}, {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'}, {'label': 'Butane', 'value': 'Butane'}],
+                        placeholder='Type d\'énergie du chauffage'
+                    ),
+                ]),
+                html.Div([
+                    html.Label('Type d\'énergie pour l\'eau chaude sanitaire'),
+                    dcc.Dropdown(
+                        id='type-energie-ecs',
+                        options=[{'label': 'Électricité', 'value': 'Électricité'}, {'label': 'Gaz naturel', 'value': 'Gaz naturel'}, {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'}, {'label': 'Fioul domestique', 'value': 'Fioul domestique'}, {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'}, {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'}, {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'}, {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'}, {'label': 'GPL', 'value': 'GPL'}, {'label': 'Propane', 'value': 'Propane'}, {'label': 'Charbon', 'value': 'Charbon'}, {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'}, {'label': 'Butane', 'value': 'Butane'}],
+                        placeholder='Type d\'énergie pour l\'eau chaude sanitaire'
+                    ),
+                ]),
+                html.Div([
+                    html.Label('Consommation totale sur une année (en kW)'),
+                    dcc.Input(id='conso-totale', type='number', placeholder='Consommation totale'),
+                ]),
+                html.Div([
+                    html.Label('Consommation chauffage sur une année (en kW)'),
+                    dcc.Input(id='conso-chauffage', type='number', placeholder='Consommation chauffage'),
+                ]),
+                html.Div([
+                    html.Label('Consommation eau chaude sanitaire sur une année (en kW)'),
+                    dcc.Input(id='conso-ecs', type='number', placeholder='Consommation eau chaude sanitaire'),
+                ]),
+                html.Button('Prédire la classe énergétique de mon logement', id='submit-button', n_clicks=0),
+                html.Div(id='prediction-result')
+            ]
+        )
+    
+    # Méthode pour afficher la page "Prédiction de la consommation"
+    def render_prediction_page_conso(self):
+        return html.Div(
+            className='container',
+            children=[
+                html.P('⌛ La prédiction de la consommation sera disponible prochainement ⌛', style={'font-style':'italic', 'text-align':'center'}),
+            ]
+        )
 
     # Méthode pour initialiser les callbacks
     def setup_callbacks(self):
@@ -242,16 +328,15 @@ class DashInterface:
             Output('tabs-content', 'children'),
             [Input('tabs', 'value')]
         )
+        # Méthode pour afficher le contenu de l'onglet sélectionné
         def render_content(tab):
             if tab == 'tab-1':
                 return self.render_context_page()
             elif tab == 'tab-2':
                 return self.render_donnees_page()
             elif tab == 'tab-3':
-                return self.render_graphs_page()
+                return self.render_visuals_page()
             elif tab == 'tab-4':
-                return self.render_carto_page()
-            elif tab == 'tab-5':
                 return self.render_prediction_page()
             
         # Callback pour télécharger les données en CSV
@@ -260,6 +345,7 @@ class DashInterface:
             Input("export-csv-context", "n_clicks"),
             prevent_initial_call=True,
         )
+        # Méthode pour télécharger les données en CSV
         def download_csv_context(n_clicks):
             return dcc.send_data_frame(self.df.to_csv, f"data/data_69.csv", index=False)
         
@@ -272,6 +358,7 @@ class DashInterface:
             Input('graph-type-box', 'n_clicks')],
             [State('selected-graph-type', 'data')]
         )
+        # Méthode pour mettre à jour le type de graphique sélectionné
         def update_graph_type(n_hist, n_line, n_scatter, n_box, current_type):
             ctx = dash.callback_context
 
@@ -299,6 +386,7 @@ class DashInterface:
                 Input('data-filter', 'value'),
             ]
         )
+        # Méthode pour mettre à jour le graphique dynamique
         def update_dynamic_plot(x_col, y_col, graph_type, filter_values):
             if x_col and y_col:
                 filtered_df = self.df
@@ -347,6 +435,7 @@ class DashInterface:
             Input("export-png", "n_clicks"),
             prevent_initial_call=True
         )
+        # Méthode pour télécharger le graphique en PNG
         def download_png(n_clicks):
             if self.current_fig:
                 # Convertit la figure en PNG
@@ -354,6 +443,18 @@ class DashInterface:
                 encoded_image = base64.b64encode(img_bytes).decode()  
                 return f"data:image/png;base64,{encoded_image}"
             return ""
+        
+        # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
+        @self.app.callback(
+            Output('visuals-tabs-content', 'children'),
+            [Input('visuals-subtabs', 'value')]
+        )
+        # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
+        def render_visual_subtabs(subtab):
+            if subtab == 'subtab-1':
+                return self.render_graphs_page()
+            elif subtab == 'subtab-2':
+                return self.render_carto_page()
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions"
         @self.app.callback(
@@ -363,71 +464,9 @@ class DashInterface:
         # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions" 
         def render_prediction_subtabs(subtab):
             if subtab == 'subtab-1':
-                return html.Div(
-                    className='container',
-                    children=[
-                        html.H2('Informations générales sur le logement'),
-                        html.Div([
-                            html.Label('Code postal'),
-                            dcc.Input(id='code-postal', type='text', placeholder='Code postal'),
-                        ]),
-                        html.Div([
-                            html.Label('Année de construction'),
-                            dcc.Input(id='annee-construction', type='number', placeholder='Année de construction'),
-                        ]),
-                        html.Div([
-                            html.Label('Type de logement'),
-                            dcc.Dropdown(
-                                id='type-batiment',
-                                options=[{'label': 'Maison', 'value': 'Maison'}, {'label': 'Appartement', 'value': 'Appartement'}, {'label': 'Immeuble', 'value': 'Immeuble'}],
-                                placeholder='Type de logement'
-                            ),
-                        ]),
-                        html.Div([
-                            html.Label('Surface habitable (en m²)'),
-                            dcc.Input(id='surface-habitable', type='number', placeholder='Surface habitable'),
-                        ]),
-                        html.Div([
-                            html.Label('Nombre d\'étage(s)'),
-                            dcc.Input(id='nombre-etage', type='number', placeholder='Nombre d\'étage(s)'),
-                        ]),
-                        html.Div([
-                            html.Label('Hauteur sous plafond (en m)'),
-                            dcc.Input(id='hauteur-plafond', type='number', placeholder='Hauteur sous plafond'),
-                        ]),
-                        html.H2('Informations de consommation du logement'),
-                        html.Div([
-                            html.Label('Type d\'énergie du chauffage'),
-                            dcc.Dropdown(
-                                id='type-energie-chauffage',
-                                options=[{'label': 'Électricité', 'value': 'Électricité'}, {'label': 'Gaz naturel', 'value': 'Gaz naturel'}, {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'}, {'label': 'Fioul domestique', 'value': 'Fioul domestique'}, {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'}, {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'}, {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'}, {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'}, {'label': 'GPL', 'value': 'GPL'}, {'label': 'Propane', 'value': 'Propane'}, {'label': 'Charbon', 'value': 'Charbon'}, {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'}, {'label': 'Butane', 'value': 'Butane'}],
-                                placeholder='Type d\'énergie du chauffage'
-                            ),
-                        ]),
-                        html.Div([
-                            html.Label('Type d\'énergie pour l\'eau chaude sanitaire'),
-                            dcc.Dropdown(
-                                id='type-energie-ecs',
-                                options=[{'label': 'Électricité', 'value': 'Électricité'}, {'label': 'Gaz naturel', 'value': 'Gaz naturel'}, {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'}, {'label': 'Fioul domestique', 'value': 'Fioul domestique'}, {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'}, {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'}, {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'}, {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'}, {'label': 'GPL', 'value': 'GPL'}, {'label': 'Propane', 'value': 'Propane'}, {'label': 'Charbon', 'value': 'Charbon'}, {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'}, {'label': 'Butane', 'value': 'Butane'}],
-                                placeholder='Type d\'énergie pour l\'eau chaude sanitaire'
-                            ),
-                        ]),
-                        html.Div([
-                            html.Label('Consommation totale sur une année (en kW)'),
-                            dcc.Input(id='conso-totale', type='number', placeholder='Consommation totale'),
-                        ]),
-                        html.Div([
-                            html.Label('Consommation chauffage sur une année (en kW)'),
-                            dcc.Input(id='conso-chauffage', type='number', placeholder='Consommation chauffage'),
-                        ]),
-                        html.Div([
-                            html.Label('Consommation eau chaude sanitaire sur une année (en kW)'),
-                            dcc.Input(id='conso-ecs', type='number', placeholder='Consommation eau chaude sanitaire'),
-                        ]),
-                        html.Button('Prédire la classe énergétique de mon logement', id='submit-button', n_clicks=0),
-                        html.Div(id='prediction-result')
-                    ]
-                )
+                return self.render_prediction_page_dpe()
+            elif subtab == 'subtab-2':
+                return self.render_prediction_page_conso()
         
         # Callback pour faire une prédiction
         @self.app.callback(
@@ -445,6 +484,7 @@ class DashInterface:
             State('conso-chauffage', 'value'),
             State('conso-ecs', 'value')
         )
+        # Méthode pour faire une prédiction
         def predict(n_clicks, code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs):
             if n_clicks > 0:
                 if not all([code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs]):

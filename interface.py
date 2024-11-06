@@ -82,8 +82,8 @@ class DashInterface:
             children=[
                 html.H2('Téléchargement des données'),
                 html.P("Vous pouvez télécharger les données utilisées pour ce projet en cliquant sur le bouton ci-dessous. Ces données contiennent les informations sur les logements du département du Rhône."),
-                html.Button("Télécharger les données au format CSV", id="export-csv-context", n_clicks=0),
-                dcc.Download(id="download-dataframe-csv-context")
+                html.Button("Télécharger les données au format CSV", id="btn-download-data", n_clicks=0),
+                dcc.Download(id="download-data")
             ]
         )
 
@@ -516,8 +516,8 @@ class DashInterface:
             
         # Callback pour télécharger les données en CSV
         @self.app.callback(
-            Output("download-dataframe-csv-context", "data"),
-            Input("export-csv-context", "n_clicks"),
+            Output("download-data", "data"),
+            Input("btn-download-data", "n_clicks"),
             prevent_initial_call=True,
         )
         # Méthode pour télécharger les données en CSV

@@ -347,7 +347,7 @@ class DashInterface:
         )
         # Méthode pour télécharger les données en CSV
         def download_csv_context(n_clicks):
-            return dcc.send_data_frame(self.df.to_csv, f"assets/data_69.csv", index=False)
+            return dcc.send_data_frame(self.df.to_csv, f"/assets/data_69.csv", index=False)
         
         # Callback pour mettre à jour le type de graphique sélectionné
         @self.app.callback(

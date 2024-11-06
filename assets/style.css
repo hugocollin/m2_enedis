@@ -64,6 +64,17 @@ input:focus, select:focus, .dropdown:focus {
     cursor: pointer;
 }
 
+.subtab {
+    padding: 12px 20px;
+    font-weight: bold;
+    background-color: #f9f9f9;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    margin: 10px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
 .tab_selected {
     background-color: #0056b3;
     color: #fff;
@@ -136,6 +147,28 @@ input:focus, select:focus, .dropdown:focus {
     width: 50%;
 }
 
+.stats-box {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 13px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    max-width: 270px;
+}
+
+.stats-box p {
+    text-align: center;
+}
+
+.stats-boxes-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .option-box {
     cursor: pointer;
     border: 2px solid transparent;
@@ -180,7 +213,10 @@ input:focus, select:focus, .dropdown:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px 0;
+    margin: 20px auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    width: 450px;
 }
 
 .filter-checklist {
@@ -215,24 +251,31 @@ input:focus, select:focus, .dropdown:focus {
     border-radius: 5px;
 }
 
-.stats-box {
-    border: 1px solid #ddd;
+.field-box {
     border-radius: 8px;
-    padding: 13px;
+    padding: 15px;
+    margin-bottom: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    max-width: 270px;
+    background-color: #ffffff;
 }
 
-.stats-box p {
-    text-align: center;
+.field-box:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.stats-boxes-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    margin: 20px 0;
-    gap: 20px;
-    flex-wrap: wrap;
+.field-box label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333333;
+}
+
+.field-box dcc.Input,
+.field-box dcc.Dropdown {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }

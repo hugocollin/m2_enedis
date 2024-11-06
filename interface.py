@@ -289,8 +289,8 @@ class DashInterface:
                 html.H2('Graphique dynamique'),
                 dcc.Graph(id='dynamic-plot'),
 
-                html.Button("Exporter en PNG", id="export-png", n_clicks=0),
-                html.A(id="download-link", download="graph.png", children="")
+                dcc.Download(id="download-plot-png"),
+                html.Button("Télécharger le Graphique en PNG", id="btn_png")
             ]
         )
     
@@ -627,18 +627,21 @@ class DashInterface:
 
         # Callback pour télécharger le graphique en PNG
         @self.app.callback(
-            Output("download-link", "href"),
-            Input("export-png", "n_clicks"),
+            Output("download-plot-png", "data"),
+            Input("btn_png", "n_clicks"),
             prevent_initial_call=True
         )
         # Méthode pour télécharger le graphique en PNG
-        def download_png(n_clicks):
-            if self.current_fig:
-                # Convertit la figure en PNG
-                img_bytes = pio.to_image(self.current_fig, format="png")
-                encoded_image = base64.b64encode(img_bytes).decode()  
-                return f"data:image/png;base64,{encoded_image}"
-            return ""
+        def download_plot_png(n_clicks):
+            # Vérifiez que le graphique est disponible
+            if hasattr(self, 'current_fig') and self.current_fig:
+                fig = self.current_fig
+                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
+                    tmp_file_path = tmp_file.name
+                    fig.write_image(tmp_file_path, format="png")
+                return dcc.send_file(tmp_file_path, filename="graphique.png")
+            
+            return {}
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
         @self.app.callback(

@@ -106,7 +106,7 @@ class DashInterface:
             children=[
                 html.H2('Filtres'),
                 html.Div(
-                    className='axes-container',
+                    className='subcontainer',
                     children=[
                         html.Div(
                             className='option-box dropdown-item',
@@ -161,10 +161,9 @@ class DashInterface:
 
                 html.H2('Indicateurs clés de performance'),
                 html.Div(
-                    className='axes-container',
-                    children=[
-                        html.Div(id='statistics-output')
-                    ]
+                    className='stats-boxes-container',
+                    id='statistics-output',
+                    children=[]
                 )
             ]
         )
@@ -212,12 +211,12 @@ class DashInterface:
                         ],
                         n_clicks=0
                     ),
-                ], className='graph-type-container'),
+                ], className='subcontainer'),
                 dcc.Store(id='selected-graph-type', data='histogram'),
 
                 html.H2('Axes du graphique'),
                 html.Div(
-                    className='axes-container',
+                    className='subcontainer',
                     children=[
                         html.Div(
                             className='option-box dropdown-item',
@@ -298,7 +297,7 @@ class DashInterface:
     # Méthode pour afficher la page "Cartographie"
     def render_carto_page(self):
         return html.Div(
-            className='container',
+            className='visuals_container',
             children=[
                 html.P('⌛ La cartographie interactive sera disponible prochainement ⌛', style={'font-style':'italic', 'text-align':'center'}),
             ]
@@ -317,7 +316,7 @@ class DashInterface:
     # Méthode pour afficher la page "Prédiction du DPE"
     def render_prediction_page_dpe(self):
         return html.Div(
-            className='container',
+            className='form_container',
             children=[
                 html.H2('Informations générales sur le logement'),
                 html.Div([
@@ -385,7 +384,7 @@ class DashInterface:
     # Méthode pour afficher la page "Prédiction de la consommation"
     def render_prediction_page_conso(self):
         return html.Div(
-            className='container',
+            className='form_container',
             children=[
                 html.P('⌛ La prédiction de la consommation sera disponible prochainement ⌛', style={'font-style':'italic', 'text-align':'center'}),
             ]
@@ -463,14 +462,17 @@ class DashInterface:
             # Génération des éléments HTML pour chaque colonne avec libellé
             stats_output = []
             for col, col_stats in stats.items():
-                stats_output.append(html.Div([
+                stats_output.append(html.Div(
+                className='stats-box',
+                children=[
                     html.H4(f"Statistiques de la {COLUMN_LABELS[col]}"),
                     html.P(f"Moyenne : {col_stats['moyenne']:.2f}"),
                     html.P(f"Écart-type : {col_stats['écart-type']:.2f}"),
                     html.P(f"Somme : {col_stats['somme']:.2f}"),
                     html.P(f"Min : {col_stats['min']:.2f}"),
                     html.P(f"Max : {col_stats['max']:.2f}")
-                ]))
+                ]
+            ))
 
             return stats_output
         

@@ -305,6 +305,8 @@ class DashInterface:
 
                 if filter_values:  
                     filtered_df = filtered_df[filtered_df['Etiquette_DPE'].isin(filter_values)]
+
+                filtered_df = filtered_df.sort_values(by=x_col, ascending=True)
                 
                 color_map = {
                     'A': '#479E72',

@@ -70,6 +70,50 @@ button:active {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #d6d6d6;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container input,
+.container select,
+.container .dropdown,
+.container button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.visuals_container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #d6d6d6;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.centered-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
 .graph-type-container,
 .axes-container {
     display: flex;
@@ -111,7 +155,7 @@ button:active {
     transition: border-color 0.3s, background-color 0.3s;
     font-weight: bold;
     font-size: 15px;
-    width: 300px;
+    width: 350px;
 }
 
 .graph-type-option:hover,
@@ -158,46 +202,30 @@ button:active {
     border-radius: 5px;
 }
 
-.graph_container {
-    max-width: 1000px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #d6d6d6;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #d6d6d6;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.container input,
-.container select,
-.container .dropdown,
-.container button {
-    width: 100%;
-    margin-top: 10px;
-}
-
-.image-container {
+.kpi-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    margin: 20px auto;
-    max-width: 600px;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+    margin-top: 20px;
 }
 
-.centered-image {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
+.kpi-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 180px;
+    text-align: center;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-box h4 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.kpi-box p {
+    font-size: 1.2em;
+    color: #555;
 }

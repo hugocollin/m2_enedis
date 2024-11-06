@@ -92,16 +92,87 @@ class DashInterface:
     def render_visuals_page(self):
         return html.Div([
             dcc.Tabs(id="visuals-subtabs", value='subtab-1', children=[
-                dcc.Tab(label='Graphiques et Stats', value='subtab-1', className='tab', selected_className='tab_selected'),
-                dcc.Tab(label='Cartographie', value='subtab-2', className='tab', selected_className='tab_selected')
+                dcc.Tab(label='Statistiques', value='subtab-1', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Graphiques', value='subtab-2', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Cartographie', value='subtab-3', className='tab', selected_className='tab_selected')
             ]),
             html.Div(id='visuals-tabs-content')
         ])
     
+    # Méthode pour afficher la page "Statistiques"
+    def render_stats_page(self):
+        return html.Div(
+            className='visuals_container',
+            children=[
+                html.H2('Filtres'),
+                html.Div(
+                    className='axes-container',
+                    children=[
+                        html.Div(
+                            className='option-box dropdown-item',
+                            children=[
+                                html.Label("Communes", className='dropdown-label'),
+                                dcc.Dropdown(
+                                    id='filter-nom-commune',
+                                    options=[{'label': val, 'value': val} for val in self.df['Nom__commune_(BAN)'].unique()],
+                                    multi=True,
+                                    placeholder='Sélectionnez une ou plusieurs valeurs'
+                                ),
+                            ]
+                        ),
+                        html.Div(
+                            className='option-box dropdown-item',
+                            children=[
+                                html.Label("Type de batiments", className='dropdown-label'),
+                                dcc.Dropdown(
+                                    id='filter-type-batiment',
+                                    options=[{'label': val, 'value': val} for val in self.df['Type_bâtiment'].unique()],
+                                    multi=True,
+                                    placeholder='Sélectionnez une ou plusieurs valeurs'
+                                ),
+                            ]
+                        ),
+                        html.Div(
+                            className='option-box dropdown-item',
+                            children=[
+                                html.Label("Type d\'énergie pour l\'eau chaude sanitaire", className='dropdown-label'),
+                                dcc.Dropdown(
+                                    id='filter-type-energie-ecs',
+                                    options=[{'label': val, 'value': val} for val in self.df['Type_énergie_principale_ECS'].unique()],
+                                    multi=True,
+                                    placeholder='Sélectionnez une ou plusieurs valeurs'
+                                ),
+                            ]
+                        ),
+                        html.Div(
+                            className='option-box dropdown-item',
+                            children=[
+                                html.Label("Type d\'énergie du chauffage", className='dropdown-label'),
+                                dcc.Dropdown(
+                                    id='filter-type-energie-chauffage',
+                                    options=[{'label': val, 'value': val} for val in self.df['Type_énergie_principale_chauffage'].unique()],
+                                    multi=True,
+                                    placeholder='Sélectionnez une ou plusieurs valeurs'
+                                ),
+                            ]
+                        ),
+                    ]
+                ),
+
+                html.H2('Indicateurs clés de performance'),
+                html.Div(
+                    className='axes-container',
+                    children=[
+                        html.Div(id='statistics-output')
+                    ]
+                )
+            ]
+        )
+    
     # Méthode pour afficher la page "Graphiques"
     def render_graphs_page(self):
         return html.Div(
-            className='graph_container',
+            className='visuals_container',
             children=[
                 html.H2('Types de graphique'),
                 html.Div([
@@ -218,48 +289,6 @@ class DashInterface:
                 
                 html.H2('Graphique dynamique'),
                 dcc.Graph(id='dynamic-plot'),
-                
-                html.H2('Statistiques des consommations'),
-                html.Div(
-                    className='statistics-section', children=[
-                    html.Div([
-                        html.Label("Nom Commune"),
-                        dcc.Dropdown(
-                            id='filter-nom-commune',
-                            options=[{'label': val, 'value': val} for val in self.df['Nom__commune_(BAN)'].unique()],
-                            multi=True,
-                            placeholder='Sélectionnez une ou plusieurs communes'
-                        ),
-                    ]),
-                    html.Div([
-                        html.Label("Type Bâtiment"),
-                        dcc.Dropdown(
-                            id='filter-type-batiment',
-                            options=[{'label': val, 'value': val} for val in self.df['Type_bâtiment'].unique()],
-                            multi=True,
-                            placeholder='Sélectionnez un ou plusieurs types de bâtiment'
-                        ),
-                    ]),
-                    html.Div([
-                        html.Label("Type énergie principale ECS"),
-                        dcc.Dropdown(
-                            id='filter-type-energie-ecs',
-                            options=[{'label': val, 'value': val} for val in self.df['Type_énergie_principale_ECS'].unique()],
-                            multi=True,
-                            placeholder='Sélectionnez un ou plusieurs types d\'énergie ECS'
-                        ),
-                    ]),
-                    html.Div([
-                        html.Label("Type énergie principale Chauffage"),
-                        dcc.Dropdown(
-                            id='filter-type-energie-chauffage',
-                            options=[{'label': val, 'value': val} for val in self.df['Type_énergie_principale_chauffage'].unique()],
-                            multi=True,
-                            placeholder='Sélectionnez un ou plusieurs types d\'énergie Chauffage'
-                        ),
-                    ]),
-                    html.Div(id='statistics-output')
-                ]),
 
                 html.Button("Exporter en PNG", id="export-png", n_clicks=0),
                 html.A(id="download-link", download="graph.png", children="")
@@ -391,6 +420,60 @@ class DashInterface:
         def download_csv_context(n_clicks):
             return dcc.send_data_frame(self.df.to_csv, f"/assets/data_69.csv", index=False)
         
+        # Dictionnaire de libellés pour les colonnes
+        COLUMN_LABELS = {
+            'Conso_5_usages_é_finale': 'consommation totale',
+            'Conso_chauffage_é_finale': 'consommation du chauffage',
+            'Conso_ECS_é_finale': 'consommation de l\'eau chaude sanitaire'
+        }
+
+        @self.app.callback(
+            Output('statistics-output', 'children'),
+            [
+                Input('filter-nom-commune', 'value'),
+                Input('filter-type-batiment', 'value'),
+                Input('filter-type-energie-ecs', 'value'),
+                Input('filter-type-energie-chauffage', 'value')
+            ]
+        )
+        def update_statistics(filter_commune, filter_batiment, filter_energie_ecs, filter_energie_chauffage):
+            filtered_df = self.df
+
+            # Filtrer sur les valeurs sélectionnées dans chaque Dropdown
+            if filter_commune:
+                filtered_df = filtered_df[filtered_df['Nom__commune_(BAN)'].isin(filter_commune)]
+            if filter_batiment:
+                filtered_df = filtered_df[filtered_df['Type_bâtiment'].isin(filter_batiment)]
+            if filter_energie_ecs:
+                filtered_df = filtered_df[filtered_df['Type_énergie_principale_ECS'].isin(filter_energie_ecs)]
+            if filter_energie_chauffage:
+                filtered_df = filtered_df[filtered_df['Type_énergie_principale_chauffage'].isin(filter_energie_chauffage)]
+
+            # Calcul des statistiques
+            stats = {}
+            for col in COLUMN_LABELS.keys():
+                stats[col] = {
+                    'moyenne': filtered_df[col].mean(),
+                    'écart-type': filtered_df[col].std(),
+                    'somme': filtered_df[col].sum(),
+                    'min': filtered_df[col].min(),
+                    'max': filtered_df[col].max(),
+                }
+
+            # Génération des éléments HTML pour chaque colonne avec libellé
+            stats_output = []
+            for col, col_stats in stats.items():
+                stats_output.append(html.Div([
+                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]}"),
+                    html.P(f"Moyenne : {col_stats['moyenne']:.2f}"),
+                    html.P(f"Écart-type : {col_stats['écart-type']:.2f}"),
+                    html.P(f"Somme : {col_stats['somme']:.2f}"),
+                    html.P(f"Min : {col_stats['min']:.2f}"),
+                    html.P(f"Max : {col_stats['max']:.2f}")
+                ]))
+
+            return stats_output
+        
         # Callback pour mettre à jour le type de graphique sélectionné
         @self.app.callback(
             Output('selected-graph-type', 'data'),
@@ -471,60 +554,6 @@ class DashInterface:
                 return fig
             return {}
 
-        # Dictionnaire de libellés pour les colonnes
-        COLUMN_LABELS = {
-            'Conso_5_usages_é_finale': 'Conso 5 Usages',
-            'Conso_ECS_é_finale': 'Conso ECS',
-            'Conso_chauffage_é_finale': 'Conso Chauffage'
-        }
-
-        @self.app.callback(
-        Output('statistics-output', 'children'),
-        [
-            Input('filter-nom-commune', 'value'),
-            Input('filter-type-batiment', 'value'),
-            Input('filter-type-energie-ecs', 'value'),
-            Input('filter-type-energie-chauffage', 'value')
-        ]
-        )
-        def update_statistics(filter_commune, filter_batiment, filter_energie_ecs, filter_energie_chauffage):
-            filtered_df = self.df
-
-            # Filtrer sur les valeurs sélectionnées dans chaque Dropdown
-            if filter_commune:
-                filtered_df = filtered_df[filtered_df['Nom__commune_(BAN)'].isin(filter_commune)]
-            if filter_batiment:
-                filtered_df = filtered_df[filtered_df['Type_bâtiment'].isin(filter_batiment)]
-            if filter_energie_ecs:
-                filtered_df = filtered_df[filtered_df['Type_énergie_principale_ECS'].isin(filter_energie_ecs)]
-            if filter_energie_chauffage:
-                filtered_df = filtered_df[filtered_df['Type_énergie_principale_chauffage'].isin(filter_energie_chauffage)]
-
-            # Calcul des statistiques
-            stats = {}
-            for col in COLUMN_LABELS.keys():
-                stats[col] = {
-                    'moyenne': filtered_df[col].mean(),
-                    'écart-type': filtered_df[col].std(),
-                    'somme': filtered_df[col].sum(),
-                    'min': filtered_df[col].min(),
-                    'max': filtered_df[col].max(),
-                }
-
-            # Génération des éléments HTML pour chaque colonne avec libellé
-            stats_output = []
-            for col, col_stats in stats.items():
-                stats_output.append(html.Div([
-                    html.H4(f"Statistiques pour {COLUMN_LABELS[col]}"),  
-                    html.P(f"Moyenne: {col_stats['moyenne']:.2f}"),
-                    html.P(f"Écart-type: {col_stats['écart-type']:.2f}"),
-                    html.P(f"Somme: {col_stats['somme']:.2f}"),
-                    html.P(f"Min: {col_stats['min']:.2f}"),
-                    html.P(f"Max: {col_stats['max']:.2f}")
-                ]))
-
-            return stats_output
-
         # Callback pour télécharger le graphique en PNG
         @self.app.callback(
             Output("download-link", "href"),
@@ -548,8 +577,10 @@ class DashInterface:
         # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
         def render_visual_subtabs(subtab):
             if subtab == 'subtab-1':
-                return self.render_graphs_page()
+                return self.render_stats_page()
             elif subtab == 'subtab-2':
+                return self.render_graphs_page()
+            elif subtab == 'subtab-3':
                 return self.render_carto_page()
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions"

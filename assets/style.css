@@ -26,6 +26,7 @@ button {
     font-size: 16px;
     transition: background-color 0.3s, transform 0.2s;
     margin-top: 10px;
+    width: 100%;
 }
 
 button:hover {
@@ -92,6 +93,16 @@ input:focus, select:focus, .dropdown:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+.model_container {
+    margin: 50px auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .visuals_container {
     max-width: 1000px;
     margin: 50px auto;
@@ -130,6 +141,16 @@ input:focus, select:focus, .dropdown:focus {
     align-items: center;
     gap: 20px;
     flex-wrap: wrap;
+}
+
+.model_subcontainer {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #d6d6d6;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .image-container {

@@ -28,9 +28,9 @@ class DashInterface:
         self.app.layout = html.Div([
             dcc.Tabs(id="tabs", value='tab-1', children=[
                 dcc.Tab(label='Contexte', value='tab-1', className='tab', selected_className='tab_selected'),
-                dcc.Tab(label='Données', value='tab-2', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Modèles', value='tab-2', className='tab', selected_className='tab_selected'),
                 dcc.Tab(label='Visualisations', value='tab-3', className='tab', selected_className='tab_selected'),
-                dcc.Tab(label='Prédiction', value='tab-4', className='tab', selected_className='tab_selected'),
+                dcc.Tab(label='Prédictions', value='tab-4', className='tab', selected_className='tab_selected'),
             ]),
             html.Div(id='tabs-content')
         ])
@@ -66,8 +66,9 @@ class DashInterface:
                 html.P("L'application web comporte trois pages principales :"),
                 html.Ul([
                     html.Li("Page 'Contexte', présentant les objectifs du projet et le défi proposé par Enedis."),
-                    html.Li("Page 'Graphiques', où l'utilisateur peut construire des graphiques interactifs pour explorer les données."),
-                    html.Li("Page 'Prédiction', permettant de réaliser une prédiction de la classe DPE d'un logement en fonction d'un panel de critères.")
+                    html.Li("Page 'Modèle', permettant le téléchargement des données, le chargement de nouvelles données et le réentraînement du modèle."),
+                    html.Li("Page 'Visualisations', proposant des visuels interactifs pour explorer les données."),
+                    html.Li("Page 'Prédiction', permettant de prédire la classe énergétique d'un logement et sa consommation d'énergie.")
                 ]),
 
                 html.H2("Équipe de projet"),
@@ -78,12 +79,36 @@ class DashInterface:
     # Méthode pour afficher la page "Données"
     def render_donnees_page(self):
         return html.Div(
-            className='container',
+            className='model_container',
             children=[
-                html.H2('Téléchargement des données'),
-                html.P("Vous pouvez télécharger les données utilisées pour ce projet en cliquant sur le bouton ci-dessous. Ces données contiennent les informations sur les logements du département du Rhône."),
-                html.Button("Télécharger les données au format CSV", id="btn-download-data", n_clicks=0),
-                dcc.Download(id="download-data")
+                html.Div(
+                    className='model_subcontainer',
+                    children=[
+                        html.H2('Téléchargement des données d\'origine'),
+                        html.P("Ces données contiennent les informations sur les logements du département du Rhône (69), au format CSV."),
+                        html.Button("Télécharger les données", id="btn-download-data", n_clicks=0),
+                        dcc.Download(id="download-data")
+                    ]
+                ),
+                html.Div(
+                    className='model_subcontainer',
+                    children=[
+                        html.H2('API de l\'Ademe'),
+                        html.P("Permet de charger de nouvelles données de logements, en utilisant l'API de l'Ademe."),
+                        html.Button("Charger de nouvelles données", id="", n_clicks=0, style={'background-color':'grey'}),
+                        html.Button("Télécharger les nouvelles données", id="", n_clicks=0, style={'background-color':'grey'}),
+                        html.Button("Supprimer les nouvelles données", id="", n_clicks=0, style={'background-color':'grey'}),
+                    ]
+                ),
+                html.Div(
+                    className='model_subcontainer',
+                    children=[
+                        html.H2('Réentraînement des modèles de prédiction'),
+                        html.P("Permet de réentraîner les modèle de prédiction du DPE et de la consommation avec les nouvelles données."),
+                        html.Button("Réentraîner la prédiction du DPE", id="", n_clicks=0, style={'background-color':'grey'}),
+                        html.Button("Réentraîner la prédiction de la consommation", id="", n_clicks=0, style={'background-color':'grey'}),
+                    ]
+                )
             ]
         )
 
@@ -296,7 +321,7 @@ class DashInterface:
             className='visuals_container',
             children=[
                 html.H2('Carte dynamique de la répartition des étiquettes DPE'),
-                html.P('Pour des raisons de performances au maximum 100 000 points sont affichés.', style={'font-style':'italic', 'text-align':'center'}),
+                html.P('Pour des raisons de performances au maximum 100 000 points sont affichés', style={'font-style':'italic', 'text-align':'center'}),
                 html.Div([
                     dcc.Checklist(
                         id='data-filter',

@@ -3,6 +3,7 @@ from model import Model
 import dash
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
+import io
 import os
 import pandas as pd
 import plotly.express as px
@@ -285,10 +286,7 @@ class DashInterface:
                 ),
                 
                 html.H2('Graphique dynamique'),
-                dcc.Graph(id='dynamic-plot'),
-
-                dcc.Download(id="download-plot-png"),
-                html.Button("Télécharger le Graphique en PNG", id="btn_png")
+                dcc.Graph(id='dynamic-plot')
             ]
         )
     
@@ -586,7 +584,7 @@ class DashInterface:
                 stats_output.append(html.Div(
                 className='stats-box',
                 children=[
-                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]}"),
+                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]} (en kW)"),
                     html.P(f"Moyenne : {col_stats['moyenne']:.2f}"),
                     html.P(f"Écart-type : {col_stats['écart-type']:.2f}"),
                     html.P(f"Somme : {col_stats['somme']:.2f}"),
@@ -673,29 +671,11 @@ class DashInterface:
                                 title=f"Graphique en ligne ({x_col} vs {y_col}) par Etiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
 
-                self.current_fig = fig  
+                self.current_fig = fig
                 return fig
             return {}
 
-        # Callback pour télécharger le graphique en PNG
-        @self.app.callback(
-            Output("download-plot-png", "data"),
-            Input("btn_png", "n_clicks"),
-            prevent_initial_call=True
-        )
-        # # Méthode pour télécharger le graphique en PNG
-        # def download_plot_png(n_clicks):
-        #     # Vérifiez que le graphique est disponible
-        #     if hasattr(self, 'current_fig') and self.current_fig:
-        #         fig = self.current_fig
-        #         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
-        #             tmp_file_path = tmp_file.name
-        #             fig.write_image(tmp_file_path, format="png")
-        #         return dcc.send_file(tmp_file_path, filename="graphique.png")
-            
-        #     return {}
-
-        # Callback pour mettre à jour la carte avec Plotly
+        # Callback pour mettre à jour la carte 
         @self.app.callback(
             Output('map-plotly', 'figure'),
             [
@@ -703,13 +683,13 @@ class DashInterface:
                 Input('data-filter', 'value')
             ]
         )
+        # Méthode pour mettre à jour la carte
         def generate_map_plotly(subtabs_value, selected_dpe):
             if subtabs_value != 'subtab-3':
                 return dash.no_update
 
             data = self.df.copy()
 
-            # [TEMP]
             if len(data) > 100000:
                 data = data.sample(100000, random_state=42)
 

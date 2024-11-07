@@ -115,12 +115,21 @@ class DashInterface:
     # Méthode pour afficher la page "Visualisations"
     def render_visuals_page(self):
         return html.Div([
-            dcc.Tabs(id="visuals-subtabs", value='subtab-1', children=[
-                dcc.Tab(label='Tableau', value='subtab-1', className='subtab', selected_className='tab_selected'),
-                dcc.Tab(label='Statistiques', value='subtab-2', className='subtab', selected_className='tab_selected'),
-                dcc.Tab(label='Graphiques', value='subtab-3', className='subtab', selected_className='tab_selected'),
-                dcc.Tab(label='Cartographie', value='subtab-4', className='subtab', selected_className='tab_selected')
-            ]),
+            html.Div(
+                className='subtabs_container',
+                children=[
+                    dcc.Tabs(
+                        id="visuals-subtabs",
+                        value='subtab-1',
+                        children=[
+                            dcc.Tab(label='Tableau', value='subtab-1', className='subtab_visuals', selected_className='tab_selected'),
+                            dcc.Tab(label='Statistiques', value='subtab-2', className='subtab_visuals', selected_className='tab_selected'),
+                            dcc.Tab(label='Graphiques', value='subtab-3', className='subtab_visuals', selected_className='tab_selected'),
+                            dcc.Tab(label='Cartographie', value='subtab-4', className='subtab_visuals', selected_className='tab_selected')
+                        ],
+                    )
+                ]
+            ),
             html.Div(id='visuals-tabs-content')
         ])
     
@@ -399,10 +408,19 @@ class DashInterface:
     # Méthode pour afficher la page "Prédiction"
     def render_prediction_page(self):
         return html.Div([
-            dcc.Tabs(id="prediction-subtabs", value='subtab-1', children=[
-                dcc.Tab(label='Prédiction du DPE', value='subtab-1', className='subtab', selected_className='tab_selected'),
-                dcc.Tab(label='Prédiction de la consomation', value='subtab-2', className='subtab', selected_className='tab_selected')
-            ]),
+            html.Div(
+                className='subtabs_container',
+                children=[
+                    dcc.Tabs(
+                        id="prediction-subtabs",
+                        value='subtab-1',
+                        children=[
+                            dcc.Tab(label='Prédiction du DPE', value='subtab-1', className='subtab_predict', selected_className='tab_selected'),
+                            dcc.Tab(label='Prédiction de la consomation', value='subtab-2', className='subtab_predict', selected_className='tab_selected')
+                        ],
+                    )
+                ]
+            ),
             html.Div(id='prediction-tabs-content')
         ])
     

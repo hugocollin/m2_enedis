@@ -60,21 +60,39 @@ input:focus, select:focus, .dropdown:focus {
     font-weight: bold;
     background-color: #f9f9f9;
     border: 1px solid #d6d6d6;
-    border-radius: 10px;
+    border-radius: 30px;
     margin: 10px;
     transition: background-color 0.3s, box-shadow 0.3s;
     cursor: pointer;
 }
 
-.subtab {
+.subtab_visuals {
     padding: 12px 20px;
     font-weight: bold;
     background-color: #f9f9f9;
     border: 1px solid #d6d6d6;
-    border-radius: 10px;
+    min-width: 200px;
+    border-radius: 30px;
     margin: 10px;
     transition: background-color 0.3s, box-shadow 0.3s;
     cursor: pointer;
+}
+
+.subtab_predict {
+    padding: 12px 20px;
+    font-weight: bold;
+    background-color: #f9f9f9;
+    border: 1px solid #d6d6d6;
+    min-width: 300px;
+    border-radius: 30px;
+    margin: 10px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.subtabs_container {
+    display: flex;
+    justify-content: center
 }
 
 .tab_selected {

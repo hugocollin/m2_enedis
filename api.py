@@ -28,12 +28,6 @@ class API:
                 rows_added = len(data["results"])
                 all_data.extend(data["results"])
                 total_rows_added += rows_added
-
-                # Affichage des informations de progression
-                yield {
-                    "total_rows_added": total_rows_added,
-                    "total_rows": total_rows,
-                }
                 
                 print(f"Page {page_number} traitée : {total_rows_added} lignes récupérées sur {total_rows}.")
                 

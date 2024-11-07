@@ -579,7 +579,6 @@ class DashInterface:
         )
         # Méthode pour télécharger les données en CSV
         def download_csv(n_clicks):
-            print('download_csv')
             if n_clicks:
                 return dcc.send_file('assets/data_69.csv')
 

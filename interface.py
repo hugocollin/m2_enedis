@@ -334,7 +334,10 @@ class DashInterface:
                 ),
                 
                 html.H2('Graphique dynamique'),
-                dcc.Graph(id='dynamic-plot')
+                dcc.Graph(id='dynamic-plot'),
+
+                html.Button("Télécharger le graphique", id="btn-download-graph", n_clicks=0),
+                dcc.Download(id="download-graph")
             ]
         )
     
@@ -383,7 +386,10 @@ class DashInterface:
                         className='filter-checklist'
                     ),
                 ], className='filter-container'),
-                dcc.Graph(id='map-plotly')
+                dcc.Graph(id='map-plotly'),
+
+                html.Button("Télécharger la carte", id="btn-download-map", n_clicks=0),
+                dcc.Download(id="download-map")
             ]
         )
 
@@ -571,7 +577,40 @@ class DashInterface:
         # Méthode pour télécharger les données en CSV
         def download_csv(n_clicks):
             if n_clicks:
-                return dcc.send_file('assets/data_69.csv')
+                return dcc.send_file('data.csv')
+
+        # Callback pour télécharger le graphique en PNG
+        @self.app.callback(
+            Output("download-graph", "data"),
+            Input("btn-download-graph", "n_clicks"),
+            prevent_initial_call=True,
+        )
+
+        # Méthode pour télécharger le graphique en PNG
+        def download_graph_as_png(n_clicks):
+            if n_clicks:
+                if self.current_fig:
+                    buffer = io.BytesIO()
+                    self.current_fig.write_image(buffer, format="png")
+                    buffer.seek(0)
+                    return dcc.send_bytes(buffer.read(), "graphique.png")
+
+        # Callback pour télécharger la carte en PNG
+        @self.app.callback(
+            Output("download-map", "data"),
+            Input("btn-download-map", "n_clicks"),
+            prevent_initial_call=True,
+        )
+
+        # Méthode pour télécharger la carte en PNG
+        def download_map_as_png(n_clicks):
+            if n_clicks:
+                if self.current_fig:
+                    buffer = io.BytesIO()
+                    self.current_fig.write_image(buffer, format="png")
+                    buffer.seek(0)
+                    return dcc.send_bytes(buffer.read(), "carte.png")
+
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
         @self.app.callback(
@@ -786,7 +825,7 @@ class DashInterface:
                 mapbox_style="carto-positron",
                 margin={"r":0,"t":50,"l":0,"b":0}
             )
-
+            self.current_fig = fig
             return fig
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions"

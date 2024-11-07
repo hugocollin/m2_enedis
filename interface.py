@@ -127,7 +127,7 @@ class DashInterface:
     # Méthode pour afficher la page "Tableau"
     def render_tab_page(self):
         if len(self.df) > 100000:
-            data = self.df.sample(100000, random_state=None)
+            data = self.df.sample(10000, random_state=None)
         return html.Div(
             className='visuals_container',
             children=[

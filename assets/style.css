@@ -163,7 +163,7 @@ input:focus, select:focus, .dropdown:focus {
 
 .model_subcontainer {
     max-width: 400px;
-    margin: 50px auto;
+    margin: 50px 20px;
     padding: 20px;
     background-color: #fff;
     border: 1px solid #d6d6d6;

@@ -1,3 +1,4 @@
+from api import API
 from model import Model
 
 import dash
@@ -84,20 +85,9 @@ class DashInterface:
                 html.Div(
                     className='model_subcontainer',
                     children=[
-                        html.H2('Téléchargement des données d\'origine'),
-                        html.P("Ces données contiennent les informations sur les logements du département du Rhône (69), au format CSV."),
-                        html.Button("Télécharger les données", id="btn-download-data", n_clicks=0),
-                        dcc.Download(id="download-data")
-                    ]
-                ),
-                html.Div(
-                    className='model_subcontainer',
-                    children=[
                         html.H2('API de l\'Ademe'),
                         html.P("Permet de charger de nouvelles données de logements, en utilisant l'API de l'Ademe."),
-                        html.Button("Charger de nouvelles données", id="", n_clicks=0, style={'background-color':'grey'}),
-                        html.Button("Télécharger les nouvelles données", id="", n_clicks=0, style={'background-color':'grey'}),
-                        html.Button("Supprimer les nouvelles données", id="", n_clicks=0, style={'background-color':'grey'}),
+                        html.Button("Actualiser les données", id="btn-refresh-data", n_clicks=0)
                     ]
                 ),
                 html.Div(
@@ -106,7 +96,7 @@ class DashInterface:
                         html.H2('Réentraînement des modèles de prédiction'),
                         html.P("Permet de réentraîner les modèle de prédiction du DPE et de la consommation avec les nouvelles données."),
                         html.Button("Réentraîner la prédiction du DPE", id="", n_clicks=0, style={'background-color':'grey'}),
-                        html.Button("Réentraîner la prédiction de la consommation", id="", n_clicks=0, style={'background-color':'grey'}),
+                        html.Button("Réentraîner la prédiction de la consommation", id="", n_clicks=0, style={'background-color':'grey'})
                     ]
                 )
             ]
@@ -154,7 +144,10 @@ class DashInterface:
                         'whiteSpace': 'nowrap',
                         'textOverflow': 'ellipsis'
                     }
-                )
+                ),
+
+                html.Button("Télécharger les données", id="btn-download-data", n_clicks=0),
+                dcc.Download(id="download-data")
             ]
         )
     
@@ -173,7 +166,7 @@ class DashInterface:
                                 html.Label("Communes", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='filter-nom-commune',
-                                    options=[{'label': val, 'value': val} for val in self.df['Nom__commune_(BAN)'].unique()],
+                                    options=[{'label': val, 'value': val} for val in self.df['Nom commune'].unique()],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -185,7 +178,7 @@ class DashInterface:
                                 html.Label("Type de batiments", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='filter-type-batiment',
-                                    options=[{'label': val, 'value': val} for val in self.df['Type_bâtiment'].unique()],
+                                    options=[{'label': val, 'value': val} for val in self.df['Type bâtiment'].unique()],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -197,7 +190,7 @@ class DashInterface:
                                 html.Label("Type d\'énergie pour l\'eau chaude sanitaire", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='filter-type-energie-ecs',
-                                    options=[{'label': val, 'value': val} for val in self.df['Type_énergie_principale_ECS'].unique()],
+                                    options=[{'label': val, 'value': val} for val in self.df['Type énergie ECS'].unique()],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -209,7 +202,7 @@ class DashInterface:
                                 html.Label("Type d\'énergie du chauffage", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='filter-type-energie-chauffage',
-                                    options=[{'label': val, 'value': val} for val in self.df['Type_énergie_principale_chauffage'].unique()],
+                                    options=[{'label': val, 'value': val} for val in self.df['Type énergie chauffage'].unique()],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -283,8 +276,8 @@ class DashInterface:
                                 html.Label("Abscisse", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='x-axis',
-                                    options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Etiquette_DPE']],
-                                    value="Période_construction"
+                                    options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Étiquette DPE']],
+                                    value="Période construction"
                                 ),
                             ]
                         ),
@@ -294,8 +287,8 @@ class DashInterface:
                                 html.Label("Ordonnée", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='y-axis',
-                                    options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Etiquette_DPE']],
-                                    value="Surface_habitable_logement"
+                                    options=[{'label': col, 'value': col} for col in self.df.columns if col not in ['Étiquette DPE']],
+                                    value="Surface habitable logement"
                                 ),
                             ]
                         ),
@@ -664,9 +657,9 @@ class DashInterface:
         
         # Dictionnaire de libellés pour les colonnes
         COLUMN_LABELS = {
-            'Conso_5_usages_é_finale': 'consommation totale',
-            'Conso_chauffage_é_finale': 'consommation du chauffage',
-            'Conso_ECS_é_finale': 'consommation de l\'eau chaude sanitaire'
+            'Consommation totale': 'consommation totale',
+            'Consommation chauffage': 'consommation du chauffage',
+            'Consommation ECS': 'consommation de l\'eau chaude sanitaire'
         }
 
         # Callback pour mettre à jour les statistiques
@@ -684,13 +677,13 @@ class DashInterface:
             filtered_df = self.df
 
             if filter_commune:
-                filtered_df = filtered_df[filtered_df['Nom__commune_(BAN)'].isin(filter_commune)]
+                filtered_df = filtered_df[filtered_df['Nom commune'].isin(filter_commune)]
             if filter_batiment:
-                filtered_df = filtered_df[filtered_df['Type_bâtiment'].isin(filter_batiment)]
+                filtered_df = filtered_df[filtered_df['Type bâtiment'].isin(filter_batiment)]
             if filter_energie_ecs:
-                filtered_df = filtered_df[filtered_df['Type_énergie_principale_ECS'].isin(filter_energie_ecs)]
+                filtered_df = filtered_df[filtered_df['Type énergie ECS'].isin(filter_energie_ecs)]
             if filter_energie_chauffage:
-                filtered_df = filtered_df[filtered_df['Type_énergie_principale_chauffage'].isin(filter_energie_chauffage)]
+                filtered_df = filtered_df[filtered_df['Type énergie chauffage'].isin(filter_energie_chauffage)]
 
             stats = {}
             for col in COLUMN_LABELS.keys():
@@ -707,7 +700,7 @@ class DashInterface:
                 stats_output.append(html.Div(
                 className='stats-box',
                 children=[
-                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]} (en kW)"),
+                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]} (en kW/an)"),
                     html.P(f"Moyenne : {col_stats['moyenne']:.2f}"),
                     html.P(f"Écart-type : {col_stats['écart-type']:.2f}"),
                     html.P(f"Somme : {col_stats['somme']:.2f}"),
@@ -761,7 +754,7 @@ class DashInterface:
                 filtered_df = self.df
 
                 if filter_values:  
-                    filtered_df = filtered_df[filtered_df['Etiquette_DPE'].isin(filter_values)]
+                    filtered_df = filtered_df[filtered_df['Étiquette DPE'].isin(filter_values)]
 
                 filtered_df = filtered_df.sort_values(by=x_col, ascending=True)
                 
@@ -775,23 +768,23 @@ class DashInterface:
                     'G': '#C6362C'
                 }
                 category_order = {
-                    'Etiquette_DPE': ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+                    'Étiquette DPE': ['A', 'B', 'C', 'D', 'E', 'F', 'G']
                 }
                 if graph_type == 'scatter':
-                    fig = px.scatter(filtered_df, x=x_col, y=y_col, color='Etiquette_DPE',
-                                    title=f"Nuage de points ({x_col} vs {y_col}) par Etiquette DPE",
+                    fig = px.scatter(filtered_df, x=x_col, y=y_col, color='Étiquette DPE',
+                                    title=f"Nuage de points ({x_col} vs {y_col}) par Étiquette DPE",
                                     color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'histogram':
-                    fig = px.histogram(filtered_df, x=x_col, color='Etiquette_DPE',
-                                    title=f"Histogramme de {x_col} par Etiquette DPE",
+                    fig = px.histogram(filtered_df, x=x_col, color='Étiquette DPE',
+                                    title=f"Histogramme de {x_col} par Étiquette DPE",
                                     color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'box':
-                    fig = px.box(filtered_df, x='Etiquette_DPE', y=y_col,
-                                title=f"Boîte à moustaches de {y_col} par Etiquette DPE",
+                    fig = px.box(filtered_df, x='Étiquette DPE', y=y_col,
+                                title=f"Boîte à moustaches de {y_col} par Étiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
                 elif graph_type == 'line':
-                    fig = px.line(filtered_df, x=x_col, y=y_col, color='Etiquette_DPE',
-                                title=f"Graphique en ligne ({x_col} vs {y_col}) par Etiquette DPE",
+                    fig = px.line(filtered_df, x=x_col, y=y_col, color='Étiquette DPE',
+                                title=f"Graphique en ligne ({x_col} vs {y_col}) par Étiquette DPE",
                                 color_discrete_map=color_map, category_orders=category_order)
 
                 self.current_fig = fig
@@ -816,26 +809,19 @@ class DashInterface:
             if len(data) > 100000:
                 data = data.sample(100000, random_state=None)
 
-            data = data.dropna(subset=['_geopoint'])
-            split_coords = data['_geopoint'].str.split(',', expand=True)
-            split_coords = split_coords.apply(lambda col: col.str.strip())
-            data['lat'] = pd.to_numeric(split_coords[0], errors='coerce')
-            data['lon'] = pd.to_numeric(split_coords[1], errors='coerce')
-            data = data.rename(columns={'Code_postal_(BAN)': 'Code postal', 'Etiquette_DPE': 'Étiquette DPE'})
-
             if selected_dpe:
                 data = data[data['Étiquette DPE'].isin(selected_dpe)]
 
             fig = px.scatter_mapbox(
                 data,
-                lat='lat',
-                lon='lon',
-                hover_name='Nom__commune_(BAN)',
+                lat='Latitude',
+                lon='Longitude',
+                hover_name='Nom commune',
                 hover_data={
                     'Code postal': True,
                     'Étiquette DPE': True,
-                    'lat': False,
-                    'lon': False
+                    'Latitude': False,
+                    'Longitude': False
                 },
                 color='Étiquette DPE',
                 color_discrete_map={
@@ -896,20 +882,20 @@ class DashInterface:
                     return html.H3(f"Veuillez remplir tous les champs", style={'color':'red'})
                 
                 data = pd.DataFrame({
-                    'Code_postal_(BAN)': [code_postal],
-                    'Période_construction': [annee_construction],
-                    'Type_bâtiment': [type_batiment],
-                    'Surface_habitable_logement': [surface_habitable],
-                    'Nombre_niveau_logement': [nombre_etage],
-                    'Hauteur_sous_plafond': [hauteur_plafond],
-                    'Type_énergie_principale_chauffage': [type_energie_chauffage],
-                    'Type_énergie_principale_ECS': [type_energie_ecs],
-                    'Conso_5_usages_é_finale': [conso_totale],
+                    'Code postal': [code_postal],
+                    'Période construction': [annee_construction],
+                    'Type bâtiment': [type_batiment],
+                    'Surface habitable logement': [surface_habitable],
+                    'Nombre niveau logement': [nombre_etage],
+                    'Hauteur sous-plafond': [hauteur_plafond],
+                    'Type énergie chauffage': [type_energie_chauffage],
+                    'Type énergie ECS': [type_energie_ecs],
+                    'Consommation totale': [conso_totale],
                     'Conso_chauffage': [conso_chauffage],
-                    'Conso_ECS_é_finale': [conso_ecs]
+                    'Consommation ECS': [conso_ecs]
                 })
 
-                prediction = Model.predict(data)
+                prediction = Model.predict_DPE_model(data)
                 return (
                     html.H3(f"Votre logement est classé en catégorie : {prediction}"),
                     html.Div(

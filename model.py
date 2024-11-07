@@ -8,16 +8,13 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 
 class Model:
-    def train(df, local_data, county):
+    def train_DPE_model(df):
         """
         Cette fonction permet de créer un modèle de classification de l'étiquette DPE
         """
-        if local_data:
-            # Chargement des données locales
-            df = pd.read_csv(f'data/data_69.csv', sep='|')
-        else:
-            # Récupération des données
-            df = API.get_all_data(county)
+
+        # Chargement des données locales
+        df = pd.read_csv(f'data/data_69.csv', sep='|')
 
         # Suppresion des colonnes informatives
         del_col = ['Adresse_(BAN)', 'Nom__commune_(BAN)', '_geopoint']
@@ -57,7 +54,7 @@ class Model:
         accuracy = accuracy_score(y_test, y_pred)
         print(f"Précision du modèle : {accuracy}")
 
-    def predict(data):
+    def predict_DPE_model(data):
         """
         Cette fonction permet de faire une prédiction de la classe énergétique
         """

@@ -579,8 +579,9 @@ class DashInterface:
         )
         # Méthode pour télécharger les données en CSV
         def download_csv(n_clicks):
+            print('download_csv')
             if n_clicks:
-                return dcc.send_file('data.csv')
+                return dcc.send_file('assets/data_69.csv')
 
         # Callback pour télécharger le graphique en PNG
         @self.app.callback(
@@ -588,7 +589,6 @@ class DashInterface:
             Input("btn-download-graph", "n_clicks"),
             prevent_initial_call=True,
         )
-
         # Méthode pour télécharger le graphique en PNG
         def download_graph_as_png(n_clicks):
             if n_clicks:
@@ -604,7 +604,6 @@ class DashInterface:
             Input("btn-download-map", "n_clicks"),
             prevent_initial_call=True,
         )
-
         # Méthode pour télécharger la carte en PNG
         def download_map_as_png(n_clicks):
             if n_clicks:
@@ -877,7 +876,7 @@ class DashInterface:
         def predict(n_clicks, code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs):
             if n_clicks > 0:
                 if not all([code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs]):
-                    return html.H3(f"Veuillez remplir tous les champs")
+                    return html.H3(f"Veuillez remplir tous les champs", style={'color':'red'})
                 
                 data = pd.DataFrame({
                     'Code_postal_(BAN)': [code_postal],

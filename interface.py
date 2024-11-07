@@ -141,6 +141,11 @@ class DashInterface:
                     virtualization=True,
                     fixed_rows={'headers': True},
                     style_as_list_view=True,
+                    style_cell={
+                    'width': '250px',
+                    'whiteSpace': 'nowrap',
+                    'textOverflow': 'ellipsis'
+                    }
                 )
             ]
         )

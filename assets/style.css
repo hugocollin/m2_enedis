@@ -96,8 +96,7 @@ input:focus, select:focus, .dropdown:focus {
 }
 
 .tab_selected {
-    background-color: #0056b3;
-    color: #fff;
+    border: 2px solid #0056b3 !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 

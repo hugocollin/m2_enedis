@@ -3,6 +3,7 @@ from model import Model
 import dash
 from dash import html, dcc, dash_table
 from dash.dependencies import Input, Output, State
+import io
 import os
 import pandas as pd
 import plotly.express as px

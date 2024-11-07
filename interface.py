@@ -1,9 +1,8 @@
 from model import Model
 
 import dash
-from dash import html, dcc
+from dash import html, dcc, dash_table
 from dash.dependencies import Input, Output, State
-import io
 import os
 import pandas as pd
 import plotly.express as px
@@ -76,8 +75,8 @@ class DashInterface:
             ]
         )
 
-    # Méthode pour afficher la page "Données"
-    def render_donnees_page(self):
+    # Méthode pour afficher la page "Modèles"
+    def render_model_page(self):
         return html.Div(
             className='model_container',
             children=[
@@ -116,12 +115,36 @@ class DashInterface:
     def render_visuals_page(self):
         return html.Div([
             dcc.Tabs(id="visuals-subtabs", value='subtab-1', children=[
-                dcc.Tab(label='Statistiques', value='subtab-1', className='subtab', selected_className='tab_selected'),
-                dcc.Tab(label='Graphiques', value='subtab-2', className='subtab', selected_className='tab_selected'),
-                dcc.Tab(label='Cartographie', value='subtab-3', className='subtab', selected_className='tab_selected')
+                dcc.Tab(label='Tableau', value='subtab-1', className='subtab', selected_className='tab_selected'),
+                dcc.Tab(label='Statistiques', value='subtab-2', className='subtab', selected_className='tab_selected'),
+                dcc.Tab(label='Graphiques', value='subtab-3', className='subtab', selected_className='tab_selected'),
+                dcc.Tab(label='Cartographie', value='subtab-4', className='subtab', selected_className='tab_selected')
             ]),
             html.Div(id='visuals-tabs-content')
         ])
+    
+    # Méthode pour afficher la page "Tableau"
+    def render_tab_page(self):
+        if len(self.df) > 100000:
+            data = self.df.sample(100000, random_state=None)
+        return html.Div(
+            className='visuals_container',
+            children=[
+                html.H2('Tableau dynamique'),
+                html.P('Pour des raisons de performances au maximum 100 000 points sont affichés', style={'font-style':'italic', 'text-align':'center'}),
+                dash_table.DataTable(
+                    id='data-table',
+                    columns=[{'name': col, 'id': col} for col in data.columns],
+                    data=data.to_dict('records'),
+                    page_size=7,
+                    style_table={'overflowX': 'auto', 'maxHeight': '600px'},
+                    style_cell={
+                        'whiteSpace': 'normal',
+                        'height': 'auto',
+                    },
+                )
+            ]
+        )
     
     # Méthode pour afficher la page "Statistiques"
     def render_stats_page(self):
@@ -533,7 +556,7 @@ class DashInterface:
             if tab == 'tab-1':
                 return self.render_context_page()
             elif tab == 'tab-2':
-                return self.render_donnees_page()
+                return self.render_model_page()
             elif tab == 'tab-3':
                 return self.render_visuals_page()
             elif tab == 'tab-4':
@@ -558,10 +581,12 @@ class DashInterface:
         # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
         def render_visual_subtabs(subtab):
             if subtab == 'subtab-1':
-                return self.render_stats_page()
+                return self.render_tab_page()
             elif subtab == 'subtab-2':
-                return self.render_graphs_page()
+                return self.render_stats_page()
             elif subtab == 'subtab-3':
+                return self.render_graphs_page()
+            elif subtab == 'subtab-4':
                 return self.render_carto_page()
         
         # Dictionnaire de libellés pour les colonnes
@@ -711,13 +736,13 @@ class DashInterface:
         )
         # Méthode pour mettre à jour la carte
         def generate_map_plotly(subtabs_value, selected_dpe):
-            if subtabs_value != 'subtab-3':
+            if subtabs_value != 'subtab-4':
                 return dash.no_update
 
             data = self.df.copy()
 
             if len(data) > 100000:
-                data = data.sample(100000, random_state=42)
+                data = data.sample(100000, random_state=None)
 
             data = data.dropna(subset=['_geopoint'])
             split_coords = data['_geopoint'].str.split(',', expand=True)

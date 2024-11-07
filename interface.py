@@ -132,17 +132,15 @@ class DashInterface:
             className='visuals_container',
             children=[
                 html.H2('Tableau dynamique'),
-                html.P('Pour des raisons de performances au maximum 100 000 points sont affichés', style={'font-style':'italic', 'text-align':'center'}),
+                html.P('Pour des raisons de performances au maximum 100 000 lignes sont affichées', style={'font-style':'italic', 'text-align':'center'}),
                 dash_table.DataTable(
                     id='data-table',
                     columns=[{'name': col, 'id': col} for col in data.columns],
                     data=data.to_dict('records'),
-                    page_size=7,
-                    style_table={'overflowX': 'auto', 'maxHeight': '600px'},
-                    style_cell={
-                        'whiteSpace': 'normal',
-                        'height': 'auto',
-                    },
+                    page_size=100000,
+                    virtualization=True,
+                    fixed_rows={'headers': True},
+                    style_as_list_view=True,
                 )
             ]
         )

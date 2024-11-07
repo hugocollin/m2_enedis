@@ -127,7 +127,7 @@ class DashInterface:
     # Méthode pour afficher la page "Tableau"
     def render_tab_page(self):
         if len(self.df) > 100000:
-            data = self.df.sample(10000, random_state=None)
+            data = self.df.sample(100000, random_state=None)
         return html.Div(
             className='visuals_container',
             children=[
@@ -136,15 +136,17 @@ class DashInterface:
                 dash_table.DataTable(
                     id='data-table',
                     columns=[{'name': col, 'id': col} for col in data.columns],
-                    data=data.to_dict('records'),
-                    page_size=100000,
+                    data=[],
+                    page_current=0,
+                    page_size=100,
+                    page_action='custom',
                     virtualization=True,
                     fixed_rows={'headers': True},
                     style_as_list_view=True,
                     style_cell={
-                    'width': '250px',
-                    'whiteSpace': 'nowrap',
-                    'textOverflow': 'ellipsis'
+                        'width': '250px',
+                        'whiteSpace': 'nowrap',
+                        'textOverflow': 'ellipsis'
                     }
                 )
             ]
@@ -632,6 +634,21 @@ class DashInterface:
             elif subtab == 'subtab-4':
                 return self.render_carto_page()
         
+        # Callback pour afficher uniquement la page demandée dans le tableau
+        @self.app.callback(
+            Output('data-table', 'data'),
+            Input('data-table', 'page_current'),
+            Input('data-table', 'page_size'),
+            State('data-table', 'data')
+        )
+        # Méthode pour afficher uniquement la page demandée dans le tableau
+        def update_table(page_current, page_size, existing_data):
+            start = page_current * page_size
+            end = start + page_size
+            page_data = self.df.iloc[start:end].to_dict('records')
+
+            return page_data
+        
         # Dictionnaire de libellés pour les colonnes
         COLUMN_LABELS = {
             'Conso_5_usages_é_finale': 'consommation totale',
@@ -639,6 +656,7 @@ class DashInterface:
             'Conso_ECS_é_finale': 'consommation de l\'eau chaude sanitaire'
         }
 
+        # Callback pour mettre à jour les statistiques
         @self.app.callback(
             Output('statistics-output', 'children'),
             [
@@ -648,10 +666,10 @@ class DashInterface:
                 Input('filter-type-energie-chauffage', 'value')
             ]
         )
+        # Méthode pour mettre à jour les statistiques
         def update_statistics(filter_commune, filter_batiment, filter_energie_ecs, filter_energie_chauffage):
             filtered_df = self.df
 
-            # Filtrer sur les valeurs sélectionnées dans chaque Dropdown
             if filter_commune:
                 filtered_df = filtered_df[filtered_df['Nom__commune_(BAN)'].isin(filter_commune)]
             if filter_batiment:
@@ -661,7 +679,6 @@ class DashInterface:
             if filter_energie_chauffage:
                 filtered_df = filtered_df[filtered_df['Type_énergie_principale_chauffage'].isin(filter_energie_chauffage)]
 
-            # Calcul des statistiques
             stats = {}
             for col in COLUMN_LABELS.keys():
                 stats[col] = {
@@ -672,7 +689,6 @@ class DashInterface:
                     'max': filtered_df[col].max(),
                 }
 
-            # Génération des éléments HTML pour chaque colonne avec libellé
             stats_output = []
             for col, col_stats in stats.items():
                 stats_output.append(html.Div(

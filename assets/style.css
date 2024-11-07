@@ -62,6 +62,7 @@ input:focus, select:focus, .dropdown:focus {
     border: 1px solid #d6d6d6;
     border-radius: 30px;
     margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, box-shadow 0.3s;
     cursor: pointer;
 }

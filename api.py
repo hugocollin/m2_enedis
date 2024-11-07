@@ -46,7 +46,7 @@ class API:
         return all_data
     
     # Méthode pour obtenir les coordonnées géographiques d'un code postal
-    def get_coordinates(code_postal):
+    def get_coordinates(self, code_postal):
         url = 'https://nominatim.openstreetmap.org/search'
         params = {
             'postalcode': code_postal,
@@ -75,3 +75,56 @@ class API:
             if 'results' in data and len(data['results']) > 0:
                 return data['results'][0]['elevation']
         return None
+
+    def get_average_temperature(self, code_postal):
+        """
+        Récupère la température moyenne d'une commune basée sur son code postal en utilisant l'API OpenWeatherMap.
+        """
+        # [TEMP] POur faire fonctionner le code
+        # from api import API
+        # code_postal = '13080'
+        # moyenne_temp = API().get_average_temperature(code_postal)
+
+        # if moyenne_temp is not None:
+        #     print(f"La température moyenne pour le code postal {code_postal} est de {moyenne_temp:.2f}°C.")
+        # else:
+        #     print("Impossible de récupérer la température moyenne.")
+
+        # Récupération des coordonnées géographiques
+        lat, lon = self.get_coordinates(code_postal)
+        if lat is None or lon is None:
+            print("Coordonnées non trouvées pour le code postal fourni.")
+            return None
+
+        # Appel de l'API OpenWeatherMap
+        url = 'https://api.openweathermap.org/data/2.5/forecast'
+        params = {
+            'lat': lat,
+            'lon': lon,
+            'appid': 'deba5862a5629eebfb2e8a8d2108e4d6',
+            'units': 'metric',
+            'lang': 'fr'
+        }
+
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            print(f"Erreur lors de la récupération des données météo : {response.status_code}")
+            return None
+
+        data = response.json()
+
+        # Extraction de la température
+        temperatures = []
+        for entry in data.get('list', []):
+            temp = entry.get('main', {}).get('temp')
+            if temp is not None:
+                temperatures.append(temp)
+
+        if not temperatures:
+            print("Aucune donnée de température disponible.")
+            return None
+
+        # Calcul de la température moyenne
+        average_temp = sum(temperatures) / len(temperatures)
+
+        return average_temp

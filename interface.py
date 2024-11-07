@@ -126,16 +126,13 @@ class DashInterface:
     
     # Méthode pour afficher la page "Tableau"
     def render_tab_page(self):
-        if len(self.df) > 100000:
-            data = self.df.sample(100000, random_state=None)
         return html.Div(
             className='visuals_container',
             children=[
                 html.H2('Tableau dynamique'),
-                html.P('Pour des raisons de performances au maximum 100 000 lignes sont affichées', style={'font-style':'italic', 'text-align':'center'}),
                 dash_table.DataTable(
                     id='data-table',
-                    columns=[{'name': col, 'id': col} for col in data.columns],
+                    columns=[{'name': col, 'id': col} for col in self.df.columns],
                     data=[],
                     page_current=0,
                     page_size=100,

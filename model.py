@@ -14,21 +14,27 @@ class Model:
         """
 
         # Chargement des données locales
-        df = pd.read_csv(f'data/data_69.csv', sep='|')
+        df = pd.read_csv('assets/data_69.csv', sep='|')
 
         # Suppresion des colonnes informatives
-        del_col = ['Adresse_(BAN)', 'Nom__commune_(BAN)', '_geopoint']
+        del_col = ['Nom commune', 'Date réception DPE', "Latitude", "Longitude", "Date_réception_DPE_graph"]
         df.drop(columns=del_col, inplace=True, errors='ignore')
         
         # Suppression des lignes avec des valeurs manquantes
         df = df.dropna()
 
         # Préparation des données pour le modèle
-        df = pd.get_dummies(df, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])
+        df = pd.get_dummies(df, columns=[
+            'Période construction', 
+            'Type bâtiment', 
+            'Classe altitude', 
+            'Type énergie ECS', 
+            'Type énergie chauffage'
+        ])
 
         # Définition des variables explicatives et de la variable cible
-        y = df["Etiquette_DPE"]
-        X = df.drop(columns=["Etiquette_DPE"])
+        y = df["Étiquette DPE"]
+        X = df.drop(columns=["Étiquette DPE"])
 
         # Sauvegarde des noms des colonnes
         feature_names = X.columns
@@ -65,7 +71,7 @@ class Model:
         feature_names = joblib.load('model/feature_names.pkl')
 
         # Transformation de l'information "Année de construction" en "Période de construction"
-        data['Période_construction'] = data['Période_construction'].apply(lambda x: 
+        data['Période construction'] = data['Période construction'].apply(lambda x: 
             'avant 1948' if x < 1948 else
             '1948-1974' if 1948 <= x <= 1974 else
             '1975-1977' if 1975 <= x <= 1977 else
@@ -79,25 +85,31 @@ class Model:
         )
 
         # Récupération de l'altitude de la commune
-        latitude, longitude = API.get_coordinates(data["Code_postal_(BAN)"])
+        latitude, longitude = API().get_coordinates(data["Code postal"])
         if latitude and longitude:
             altitude = API.get_altitude(latitude, longitude)
             if altitude is not None:
                 # Faire un case de l'ailtude en focntion de l'altitue
                 if altitude < 400:
-                    data["Classe_altitude"] = "inférieur à 400m"
+                    data["Classe altitude"] = "inférieur à 400m"
                 elif altitude >= 400 and altitude <= 800:
-                    data["Classe_altitude"] = "400-800m"
+                    data["Classe altitude"] = "400-800m"
                 else:
-                    data["Classe_altitude"] = "supérieur à 800m"
+                    data["Classe altitude"] = "supérieur à 800m"
                 
             else:
-                data["Classe_altitude"] = "inférieur à 400m"
+                data["Classe altitude"] = "inférieur à 400m"
         else:
-            data["Classe_altitude"] = "inférieur à 400m"
+            data["Classe altitude"] = "inférieur à 400m"
         
         # Application des mêmes transformations que lors de l'entraînement
-        data = pd.get_dummies(data, columns=['Période_construction', 'Type_bâtiment', 'Type_énergie_principale_chauffage', 'Type_énergie_principale_ECS', 'Classe_altitude'])
+        data = pd.get_dummies(data, columns=[
+            'Période construction', 
+            'Type bâtiment', 
+            'Classe altitude', 
+            'Type énergie ECS', 
+            'Type énergie chauffage'
+        ])
         data = data.reindex(columns=feature_names, fill_value=0)
         data = scaler.transform(data)
 

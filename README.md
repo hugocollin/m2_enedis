@@ -7,7 +7,7 @@ Ce projet est développé en Python avec un peu de CSS et un fichier Procfile. I
 Pour installer ce projet, suivez ces étapes :
 
 Clonez le dépôt :
-'''
+'''python
 git clone https://github.com/hugocollin/m2_enedis
 '''
 Accédez au répertoire du projet :

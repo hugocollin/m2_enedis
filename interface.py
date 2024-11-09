@@ -87,8 +87,9 @@ class DashInterface:
                     children=[
                         html.H2('API de l\'Ademe'),
                         html.P("Permet de charger de nouvelles données de logements, en utilisant l'API de l'Ademe."),
+                        html.P("Attention : ce bouton ne marche qu'en version locale", style={'font-style':'italic', 'color':'red'}),
                         html.Button("Actualiser les données", id="btn-refresh-data", n_clicks=0),
-                        html.P(id='refresh-status', style={'margin-top': '10px', 'color': 'green'})
+                        html.P(id='refresh-status', style={'margin-top': '10px', 'color': 'green'}) # À améliorer
                     ]
                 ),
                 html.Div(
@@ -188,10 +189,24 @@ class DashInterface:
                         html.Div(
                             className='option-box dropdown-item',
                             children=[
-                                html.Label("Type d\'énergie pour l\'eau chaude sanitaire", className='dropdown-label'),
+                                html.Label("Type d\'énergie du chauffage", className='dropdown-label'),
                                 dcc.Dropdown(
-                                    id='filter-type-energie-ecs',
-                                    options=[{'label': val, 'value': val} for val in self.df['Type énergie ECS'].unique()],
+                                    id='filter-type-energie-chauffage',
+                                    options=[
+                                        {'label': 'Électricité', 'value': 'Électricité'},
+                                        {'label': 'Gaz naturel', 'value': 'Gaz naturel'},
+                                        {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'},
+                                        {'label': 'Fioul domestique', 'value': 'Fioul domestique'},
+                                        {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'},
+                                        {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'},
+                                        {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'},
+                                        {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'},
+                                        {'label': 'GPL', 'value': 'GPL'},
+                                        {'label': 'Propane', 'value': 'Propane'},
+                                        {'label': 'Charbon', 'value': 'Charbon'},
+                                        {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'},
+                                        {'label': 'Butane', 'value': 'Butane'}
+                                    ],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -200,10 +215,24 @@ class DashInterface:
                         html.Div(
                             className='option-box dropdown-item',
                             children=[
-                                html.Label("Type d\'énergie du chauffage", className='dropdown-label'),
+                                html.Label("Type d\'énergie pour l\'eau chaude sanitaire", className='dropdown-label'),
                                 dcc.Dropdown(
-                                    id='filter-type-energie-chauffage',
-                                    options=[{'label': val, 'value': val} for val in self.df['Type énergie chauffage'].unique()],
+                                    id='filter-type-energie-ecs',
+                                    options=[
+                                        {'label': 'Électricité', 'value': 'Électricité'},
+                                        {'label': 'Gaz naturel', 'value': 'Gaz naturel'},
+                                        {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'},
+                                        {'label': 'Fioul domestique', 'value': 'Fioul domestique'},
+                                        {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'},
+                                        {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'},
+                                        {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'},
+                                        {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'},
+                                        {'label': 'GPL', 'value': 'GPL'},
+                                        {'label': 'Propane', 'value': 'Propane'},
+                                        {'label': 'Charbon', 'value': 'Charbon'},
+                                        {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'},
+                                        {'label': 'Butane', 'value': 'Butane'}
+                                    ],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -695,10 +724,10 @@ class DashInterface:
                 filtered_df = filtered_df[filtered_df['Nom commune'].isin(filter_commune)]
             if filter_batiment:
                 filtered_df = filtered_df[filtered_df['Type bâtiment'].isin(filter_batiment)]
-            if filter_energie_ecs:
-                filtered_df = filtered_df[filtered_df['Type énergie ECS'].isin(filter_energie_ecs)]
             if filter_energie_chauffage:
                 filtered_df = filtered_df[filtered_df['Type énergie chauffage'].isin(filter_energie_chauffage)]
+            if filter_energie_ecs:
+                filtered_df = filtered_df[filtered_df['Type énergie ECS'].isin(filter_energie_ecs)]
 
             stats = {}
             for col in COLUMN_LABELS.keys():

@@ -15,7 +15,7 @@ p {
     text-align: justify;
 }
 
-button {
+.ui-button {
     font-family: 'Century Gothic', sans-serif;
     background-color: #0056b3;
     color: #fff;

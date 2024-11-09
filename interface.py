@@ -15,11 +15,11 @@ class DashInterface:
     """
 
     # Constructeur de la classe
-    def __init__(self, dataframe):
+    def __init__(self):
         self.app = dash.Dash(__name__, external_stylesheets=['/assets/style.css'])
         self.app.title = "Projet Enedis"
         self.server = self.app.server
-        self.df = dataframe
+        self.df = pd.read_csv('assets/data_69.csv', sep='|')
         self.current_fig = None
         self.setup_layout()
         self.setup_callbacks()
@@ -88,7 +88,7 @@ class DashInterface:
                         html.H2('API de l\'Ademe'),
                         html.P("Permet de charger de nouvelles données de logements, en utilisant l'API de l'Ademe."),
                         html.P("Attention : ce bouton ne marche qu'en version locale", style={'font-style':'italic', 'color':'red'}),
-                        html.Button("Actualiser les données", id="btn-refresh-data", n_clicks=0),
+                        html.Button("Actualiser les données", id="btn-refresh-data", n_clicks=0, className='ui-button'),
                         html.P(id='refresh-status', style={'margin-top': '10px', 'color': 'green'}) # À améliorer
                     ]
                 ),
@@ -97,8 +97,7 @@ class DashInterface:
                     children=[
                         html.H2('Réentraînement des modèles de prédiction'),
                         html.P("Permet de réentraîner les modèle de prédiction du DPE et de la consommation avec les nouvelles données."),
-                        html.Button("Réentraîner la prédiction du DPE", id="", n_clicks=0, style={'background-color':'grey'}),
-                        html.Button("Réentraîner la prédiction de la consommation", id="", n_clicks=0, style={'background-color':'grey'})
+                        html.Button("Réentraîner les modèles de prédiction", id="", n_clicks=0, className='ui-button', style={'background-color':'grey'}),
                     ]
                 )
             ]
@@ -148,7 +147,7 @@ class DashInterface:
                     }
                 ),
 
-                html.Button("Télécharger les données", id="btn-download-data", n_clicks=0),
+                html.Button("Télécharger les données", id="btn-download-data", n_clicks=0, className='ui-button'),
                 dcc.Download(id="download-data")
             ]
         )
@@ -180,7 +179,11 @@ class DashInterface:
                                 html.Label("Type de batiments", className='dropdown-label'),
                                 dcc.Dropdown(
                                     id='filter-type-batiment',
-                                    options=[{'label': val, 'value': val} for val in self.df['Type bâtiment'].unique()],
+                                    options=[
+                                        {'label': 'Maison', 'value': 'maison'},
+                                        {'label': 'Appartement', 'value': 'appartement'},
+                                        {'label': 'Immeuble', 'value': 'immeuble'}
+                                    ],
                                     multi=True,
                                     placeholder='Sélectionnez une ou plusieurs valeurs'
                                 ),
@@ -371,7 +374,7 @@ class DashInterface:
                 html.H2('Graphique dynamique'),
                 dcc.Graph(id='dynamic-plot'),
 
-                html.Button("Télécharger le graphique", id="btn-download-graph", n_clicks=0),
+                html.Button("Télécharger le graphique", id="btn-download-graph", n_clicks=0, className='ui-button'),
                 dcc.Download(id="download-graph")
             ]
         )
@@ -423,7 +426,7 @@ class DashInterface:
                 ], className='filter-container'),
                 dcc.Graph(id='map-plotly'),
 
-                html.Button("Télécharger la carte", id="btn-download-map", n_clicks=0),
+                html.Button("Télécharger la carte", id="btn-download-map", n_clicks=0, className='ui-button', style={'background-color':'grey'}),
                 dcc.Download(id="download-map")
             ]
         )
@@ -448,7 +451,7 @@ class DashInterface:
         ])
     
     # Méthode pour afficher la page "Prédiction du DPE"
-    def render_prediction_page_dpe(self):
+    def render_dpe_prediction_page(self):
         return html.Div(
             className='form_container',
             children=[
@@ -474,9 +477,9 @@ class DashInterface:
                         dcc.Dropdown(
                             id='type-batiment',
                             options=[
-                                {'label': 'Maison', 'value': 'Maison'},
-                                {'label': 'Appartement', 'value': 'Appartement'},
-                                {'label': 'Immeuble', 'value': 'Immeuble'}
+                                {'label': 'Maison', 'value': 'maison'},
+                                {'label': 'Appartement', 'value': 'appartement'},
+                                {'label': 'Immeuble', 'value': 'immeuble'}
                             ],
                             placeholder='Type de logement'
                         ),
@@ -578,18 +581,133 @@ class DashInterface:
                     ]
                 ),
 
-                html.Button('Prédire la classe énergétique de mon logement', id='submit-button', n_clicks=0),
+                html.Button('Prédire la classe énergétique de mon logement', id='dpe-submit-button', n_clicks=0, className='ui-button'),
 
-                html.Div(id='prediction-result')
+                html.Div(id='dpe-prediction-result')
             ]
         )
     
     # Méthode pour afficher la page "Prédiction de la consommation"
-    def render_prediction_page_conso(self):
+    def render_conso_prediction_page(self):
         return html.Div(
             className='form_container',
             children=[
-                html.P('⌛ La prédiction de la consommation sera disponible prochainement ⌛', style={'font-style':'italic', 'text-align':'center'}),
+                html.H2('Informations générales sur le logement'),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Code postal'),
+                        dcc.Input(id='code-postal', type='text', placeholder='Code postal'),
+                    ]
+                ),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Année de construction'),
+                        dcc.Input(id='annee-construction', type='number', placeholder='Année de construction'),
+                    ]
+                ),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Type de logement'),
+                        dcc.Dropdown(
+                            id='type-batiment',
+                            options=[
+                                {'label': 'Maison', 'value': 'maison'},
+                                {'label': 'Appartement', 'value': 'appartement'},
+                                {'label': 'Immeuble', 'value': 'immeuble'}
+                            ],
+                            placeholder='Type de logement'
+                        ),
+                    ]
+                ),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Surface habitable (en m²)'),
+                        dcc.Input(id='surface-habitable', type='number', placeholder='Surface habitable'),
+                    ]
+                ),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Nombre d\'étage(s)'),
+                        dcc.Input(id='nombre-etage', type='number', placeholder='Nombre d\'étage(s)'),
+                    ]
+                ),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Hauteur sous plafond (en m)'),
+                        dcc.Input(id='hauteur-plafond', type='number', placeholder='Hauteur sous plafond'),
+                    ]
+                ),
+
+                html.H2('Informations énergétiques du logement'),
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Type d\'énergie du chauffage'),
+                        dcc.Dropdown(
+                            id='type-energie-chauffage',
+                            options=[
+                                {'label': 'Électricité', 'value': 'Électricité'},
+                                {'label': 'Gaz naturel', 'value': 'Gaz naturel'},
+                                {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'},
+                                {'label': 'Fioul domestique', 'value': 'Fioul domestique'},
+                                {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'},
+                                {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'},
+                                {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'},
+                                {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'},
+                                {'label': 'GPL', 'value': 'GPL'},
+                                {'label': 'Propane', 'value': 'Propane'},
+                                {'label': 'Charbon', 'value': 'Charbon'},
+                                {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'},
+                                {'label': 'Butane', 'value': 'Butane'}
+                            ],
+                            placeholder='Type d\'énergie du chauffage'
+                        ),
+                    ]
+                ),
+
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Type d\'énergie pour l\'eau chaude sanitaire'),
+                        dcc.Dropdown(
+                            id='type-energie-ecs',
+                            options=[
+                                {'label': 'Électricité', 'value': 'Électricité'},
+                                {'label': 'Gaz naturel', 'value': 'Gaz naturel'},
+                                {'label': 'Réseau de chauffage urbain', 'value': 'Réseau de Chauffage urbain'},
+                                {'label': 'Fioul domestique', 'value': 'Fioul domestique'},
+                                {'label': 'Bois – Bûches', 'value': 'Bois – Bûches'},
+                                {'label': 'Bois – Granulés (pellets) ou briquettes', 'value': 'Bois – Granulés (pellets) ou briquettes'},
+                                {'label': 'Bois – Plaquettes forestières', 'value': 'Bois – Plaquettes forestières'},
+                                {'label': 'Bois – Plaquettes d’industrie', 'value': 'Bois – Plaquettes d’industrie'},
+                                {'label': 'GPL', 'value': 'GPL'},
+                                {'label': 'Propane', 'value': 'Propane'},
+                                {'label': 'Charbon', 'value': 'Charbon'},
+                                {'label': 'Électricité d\'origine renouvelable utilisée dans le bâtiment', 'value': 'Électricité d\'origine renouvelable utilisée dans le bâtiment'},
+                                {'label': 'Butane', 'value': 'Butane'}
+                            ],
+                            placeholder='Type d\'énergie pour l\'eau chaude sanitaire'
+                        ),
+                    ]
+                ),
+
+                html.Div(
+                    className='field-box',
+                    children=[
+                        html.Label('Classe énergétique'),
+                        dcc.Dropdown(id='classe-energetique', options=['A', 'B', 'C', 'D', 'E', 'F', 'G'], placeholder='Classe énergétique'),
+                    ]
+                ),
+
+                html.Button('Prédire la consommation de mon logement', id='conso-submit-button', n_clicks=0, className='ui-button'),
+
+                html.Div(id='conso-prediction-result')
             ]
         )
 
@@ -625,48 +743,6 @@ class DashInterface:
                 api.get_data()
                 return "Données actualisées"
             return ""
-            
-        # Callback pour télécharger les données en CSV
-        @self.app.callback(
-            Output("download-data", "data"),
-            Input("btn-download-data", "n_clicks"),
-            prevent_initial_call=True,
-        )
-        # Méthode pour télécharger les données en CSV
-        def download_csv(n_clicks):
-            if n_clicks:
-                return dcc.send_file('assets/data_69.csv')
-
-        # Callback pour télécharger le graphique en PNG
-        @self.app.callback(
-            Output("download-graph", "data"),
-            Input("btn-download-graph", "n_clicks"),
-            prevent_initial_call=True,
-        )
-        # Méthode pour télécharger le graphique en PNG
-        def download_graph_as_png(n_clicks):
-            if n_clicks:
-                if self.current_fig:
-                    buffer = io.BytesIO()
-                    self.current_fig.write_image(buffer, format="png")
-                    buffer.seek(0)
-                    return dcc.send_bytes(buffer.read(), "graphique.png")
-
-        # Callback pour télécharger la carte en PNG
-        @self.app.callback(
-            Output("download-map", "data"),
-            Input("btn-download-map", "n_clicks"),
-            prevent_initial_call=True,
-        )
-        # Méthode pour télécharger la carte en PNG
-        def download_map_as_png(n_clicks):
-            if n_clicks:
-                if self.current_fig:
-                    buffer = io.BytesIO()
-                    self.current_fig.write_image(buffer, format="png")
-                    buffer.seek(0)
-                    return dcc.send_bytes(buffer.read(), "carte.png")
-
         
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Visualisations"
         @self.app.callback(
@@ -699,7 +775,18 @@ class DashInterface:
 
             return page_data
         
-        # Dictionnaire de libellés pour les colonnes
+        # Callback pour télécharger les données en CSV
+        @self.app.callback(
+            Output("download-data", "data"),
+            Input("btn-download-data", "n_clicks"),
+            prevent_initial_call=True,
+        )
+        # Méthode pour télécharger les données en CSV
+        def download_csv(n_clicks):
+            if n_clicks:
+                return dcc.send_file('assets/data_69.csv')
+        
+        # Dictionnaire de libellés des indicateurs
         COLUMN_LABELS = {
             'Consommation totale': 'consommation totale',
             'Consommation chauffage': 'consommation du chauffage',
@@ -834,6 +921,21 @@ class DashInterface:
                 self.current_fig = fig
                 return fig
             return {}
+        
+        # Callback pour télécharger le graphique en PNG
+        @self.app.callback(
+            Output("download-graph", "data"),
+            Input("btn-download-graph", "n_clicks"),
+            prevent_initial_call=True,
+        )
+        # Méthode pour télécharger le graphique en PNG
+        def download_graph_as_png(n_clicks):
+            if n_clicks:
+                if self.current_fig:
+                    buffer = io.BytesIO()
+                    self.current_fig.write_image(buffer, format="png")
+                    buffer.seek(0)
+                    return dcc.send_bytes(buffer.read(), "graphique.png")
 
         # Callback pour mettre à jour la carte 
         @self.app.callback(
@@ -891,6 +993,21 @@ class DashInterface:
             self.current_fig = fig
             return fig
         
+        # Callback pour télécharger la carte en PNG
+        @self.app.callback(
+            Output("download-map", "data"),
+            Input("btn-download-map", "n_clicks"),
+            prevent_initial_call=True,
+        )
+        # Méthode pour télécharger la carte en PNG
+        def download_map_as_png(n_clicks):
+            if n_clicks:
+                if self.current_fig:
+                    buffer = io.BytesIO()
+                    self.current_fig.write_image(buffer, format="png")
+                    buffer.seek(0)
+                    return dcc.send_bytes(buffer.read(), "carte.png")
+        
         # Callback pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions"
         @self.app.callback(
             Output('prediction-tabs-content', 'children'),
@@ -899,14 +1016,14 @@ class DashInterface:
         # Méthode pour afficher le contenu de l'onglet sélectionné dans la page "Prédictions" 
         def render_prediction_subtabs(subtab):
             if subtab == 'subtab-1':
-                return self.render_prediction_page_dpe()
+                return self.render_dpe_prediction_page()
             elif subtab == 'subtab-2':
-                return self.render_prediction_page_conso()
+                return self.render_conso_prediction_page()
         
-        # Callback pour faire une prédiction
+        # Callback pour faire la prédiction de la classe énergétique
         @self.app.callback(
-            Output('prediction-result', 'children'),
-            Input('submit-button', 'n_clicks'),
+            Output('dpe-prediction-result', 'children'),
+            Input('dpe-submit-button', 'n_clicks'),
             State('code-postal', 'value'),
             State('annee-construction', 'value'),
             State('type-batiment', 'value'),
@@ -919,7 +1036,7 @@ class DashInterface:
             State('conso-chauffage', 'value'),
             State('conso-ecs', 'value')
         )
-        # Méthode pour faire une prédiction
+        # Méthode pour faire la prédiction de la classe énergétique
         def predict(n_clicks, code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs):
             if n_clicks > 0:
                 if not all([code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, conso_totale, conso_chauffage, conso_ecs]):
@@ -939,7 +1056,7 @@ class DashInterface:
                     'Consommation ECS': [conso_ecs]
                 })
 
-                prediction = Model.predict_DPE_model(data)
+                prediction = Model.predict_DPE(data)
                 return (
                     html.H3(f"Votre logement est classé en catégorie : {prediction}"),
                     html.Div(
@@ -949,6 +1066,41 @@ class DashInterface:
                         ]
                     )
                 )
+            
+        # Callback pour faire la prédiction de la consommation
+        @self.app.callback(
+            Output('conso-prediction-result', 'children'),
+            Input('conso-submit-button', 'n_clicks'),
+            State('code-postal', 'value'),
+            State('annee-construction', 'value'),
+            State('type-batiment', 'value'),
+            State('surface-habitable', 'value'),
+            State('nombre-etage', 'value'),
+            State('hauteur-plafond', 'value'),
+            State('type-energie-chauffage', 'value'),
+            State('type-energie-ecs', 'value'),
+            State('classe-energetique', 'value')
+        )
+        # Méthode pour faire la prédiction de la consommation
+        def predict_conso(n_clicks, code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, classe_energetique):
+            if n_clicks > 0:
+                if not all([code_postal, annee_construction, type_batiment, surface_habitable, nombre_etage, hauteur_plafond, type_energie_chauffage, type_energie_ecs, classe_energetique]):
+                    return html.H3(f"Veuillez remplir tous les champs", style={'color':'red'})
+                
+                data = pd.DataFrame({
+                    'Code postal': [code_postal],
+                    'Période construction': [annee_construction],
+                    'Type bâtiment': [type_batiment],
+                    'Surface habitable logement': [surface_habitable],
+                    'Nombre niveau logement': [nombre_etage],
+                    'Hauteur sous-plafond': [hauteur_plafond],
+                    'Type énergie chauffage': [type_energie_chauffage],
+                    'Type énergie ECS': [type_energie_ecs],
+                    'Étiquette DPE': [classe_energetique]
+                })
+
+                prediction = Model.predict_conso(data)
+                return html.H3(f"La consommation totale de votre logement est d'environ : {prediction:.2f} kW/an")
 
     # Méthode pour exécuter l'interface Dash
     def run(self):

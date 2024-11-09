@@ -9,8 +9,6 @@ import os
 import pandas as pd
 import plotly.express as px
 
-import threading
-
 class DashInterface:
     """
     Interface Dash pour le projet Enedis
@@ -90,9 +88,7 @@ class DashInterface:
                         html.H2('API de l\'Ademe'),
                         html.P("Permet de charger de nouvelles données de logements, en utilisant l'API de l'Ademe."),
                         html.Button("Actualiser les données", id="btn-refresh-data", n_clicks=0),
-                        html.Div(id='progress-output'),
-                        dcc.Interval(id='interval-component', interval=1000, n_intervals=0, disabled=True),
-                        dcc.Store(id='progress-store', storage_type='memory')
+                        html.P(id='refresh-status', style={'margin-top': '10px', 'color': 'green'})
                     ]
                 ),
                 html.Div(
@@ -587,52 +583,19 @@ class DashInterface:
             elif tab == 'tab-4':
                 return self.render_prediction_page()
             
-        # Callback pour démarrer le téléchargement des données
+        # Callback pour actualiser les données de l'API
         @self.app.callback(
-            [Output('interval-component', 'disabled'),
-             Output('progress-store', 'data')],
-            [Input('btn-refresh-data', 'n_clicks')]
+            Output('refresh-status', 'children'),
+            Input('btn-refresh-data', 'n_clicks'),
+            prevent_initial_call=True
         )
-        def start_data_refresh(n_clicks):
-            if n_clicks > 0:
-                # Initialiser l'état de progression
-                progress_data = []
-                # Stocker une instance de l'API
-                self.api_instance = API()
-                # Démarrer un thread pour exécuter get_data
-                thread = threading.Thread(target=self.run_data_fetch)
-                thread.start()
-                return False, progress_data  # Activer l'Interval et initialiser le store
-            return dash.no_update, dash.no_update
-
-        # Thread pour exécuter get_data et stocker les progrès
-        def run_data_fetch(self):
-            try:
-                for progress in self.api_instance.get_data():
-                    self.progress = progress
-            except Exception as e:
-                self.progress = {"error": str(e)}
-
-        # # Callback pour mettre à jour la progression
-        # @self.app.callback(
-        #     [Output('progress-store', 'data'),
-        #      Output('progress-output', 'children'),
-        #      Output('interval-component', 'disabled')],
-        #     [Input('interval-component', 'n_intervals')],
-        #     [State('progress-store', 'data')]
-        # )
-        # def update_progress(n, progress_data):
-        #     if hasattr(self, 'api_instance') and hasattr(self, 'progress'):
-        #         progress = getattr(self, 'progress', {})
-        #         if "error" in progress:
-        #             return progress_data, f"Erreur : {progress['error']}", True
-        #         progress_data.append(progress)
-        #         message = f"Lignes ajoutées : {progress.get('total_rows_added', 0)} / {progress.get('total_rows', 0)}"
-        #         # Vérifier si le téléchargement est terminé
-        #         if progress.get('total_rows_added', 0) >= progress.get('total_rows', 0):
-        #             return progress_data, "Téléchargement terminé.", True
-        #         return progress_data, message, False
-        #     return dash.no_update, dash.no_update, True
+        # Méthode pour actualiser les données de l'API
+        def refresh_data(n_clicks):
+            if n_clicks:
+                api = API()
+                api.get_data()
+                return "Données actualisées"
+            return ""
             
         # Callback pour télécharger les données en CSV
         @self.app.callback(
@@ -962,11 +925,3 @@ class DashInterface:
     def run(self):
         port = int(os.environ.get('PORT', 8050))
         self.app.run_server(debug=False, host='0.0.0.0', port=port)
-
-    # Ajout d'une méthode pour exécuter get_data dans un thread
-    def run_data_fetch(self):
-        try:
-            for progress in self.api_instance.get_data():
-                self.progress = progress
-        except Exception as e:
-            self.progress = {"error": str(e)}

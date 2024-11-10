@@ -15,7 +15,7 @@ p {
     text-align: justify;
 }
 
-.ui-button {
+.ui_button {
     font-family: 'Century Gothic', sans-serif;
     background-color: #0056b3;
     color: #fff;
@@ -84,7 +84,7 @@ input:focus, select:focus, .dropdown:focus {
     font-weight: bold;
     background-color: #f9f9f9;
     border: 1px solid #d6d6d6;
-    min-width: 300px;
+    min-width: 350px;
     border-radius: 30px;
     margin: 10px;
     transition: background-color 0.3s, box-shadow 0.3s;
@@ -171,7 +171,7 @@ input:focus, select:focus, .dropdown:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.image-container {
+.image_container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -180,14 +180,14 @@ input:focus, select:focus, .dropdown:focus {
     max-width: 600px;
 }
 
-.centered-image {
+.centered_image {
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 50%;
 }
 
-.stats-box {
+.stats_box {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 13px;
@@ -195,11 +195,11 @@ input:focus, select:focus, .dropdown:focus {
     max-width: 270px;
 }
 
-.stats-box p {
+.stats_box p {
     text-align: center;
 }
 
-.stats-boxes-container {
+.stats_boxes_container {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -209,7 +209,7 @@ input:focus, select:focus, .dropdown:focus {
     flex-wrap: wrap;
 }
 
-.option-box {
+.option_box {
     cursor: pointer;
     border: 2px solid transparent;
     padding: 20px;
@@ -220,7 +220,7 @@ input:focus, select:focus, .dropdown:focus {
     transition: border-color 0.3s, background-color 0.3s, transform 0.3s;
 }
 
-.dropdown-item {
+.dropdown_item {
     cursor: default;
     border: 2px solid transparent;
     padding: 20px;
@@ -232,24 +232,24 @@ input:focus, select:focus, .dropdown:focus {
     width: 350px;
 }
 
-.graph-option-image {
+.graph_option_image {
     width: 30px;
     height: 30px;
 }
 
-.graph-option-text {
+.graph_option_text {
     display: block;
     margin-top: 10px;
     font-weight: bold;
     font-size: 13px;
 }
 
-.graph-type-option:hover,
-.dropdown-item:hover {
+.graph_type_option:hover,
+.dropdown_item:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.filter-container {
+.filter_container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -260,39 +260,39 @@ input:focus, select:focus, .dropdown:focus {
     width: fit-content;
 }
 
-.filter-checklist {
+.filter_checklist {
     display: flex;
     justify-content: center;
     gap: 10px;
     margin-top: 10px;
 }
 
-.filter-icon {
+.filter_icon {
     width: 40px;
     height: 40px;
     cursor: pointer;
     transition: transform 0.2s;
 }
 
-.filter-icon:hover {
+.filter_icon:hover {
     transform: scale(1.1);
 }
 
-.filter-checklist input[type="checkbox"] {
+.filter_checklist input[type="checkbox"] {
     display: none;
 }
 
-.filter-checklist label {
+.filter_checklist label {
     position: relative;
     cursor: pointer;
 }
 
-.filter-checklist input[type="checkbox"]:checked + label .filter-icon {
+.filter_checklist input[type="checkbox"]:checked + label .filter_icon {
     border: 2px solid #0056b3;
     border-radius: 5px;
 }
 
-.field-box {
+.field_box {
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
@@ -300,11 +300,11 @@ input:focus, select:focus, .dropdown:focus {
     background-color: #ffffff;
 }
 
-.field-box:hover {
+.field_box:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.field-box label {
+.field_box label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
@@ -312,8 +312,8 @@ input:focus, select:focus, .dropdown:focus {
     color: #333333;
 }
 
-.field-box dcc.Input,
-.field-box dcc.Dropdown {
+.field_box dcc.Input,
+.field_box dcc.Dropdown {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;

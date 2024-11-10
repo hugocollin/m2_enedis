@@ -72,7 +72,6 @@ C'est pourquoi nous avons utilisé cette fois-ci la fonction MLPRegressor() de s
 ```python
 regressor = MLPRegressor(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001
  ```
-[ATTENTION, CE MODELE PEUT CHANGER]  
 Pour ce modèle, nous avons utilisé les variables prédictives suivantes :
 - infos générales : code postal, niveau de vie médian dans la commune, altitude, période de construction, type de logement, surface habitable, nombre d'étages, hauteur sous plafond
 - infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, classe énergétique du logement  

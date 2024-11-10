@@ -81,12 +81,11 @@ A savoir que le niveau de vie et l'altitude ne sont pas demandés à l'utilisate
 
 
 ## Tests
-Pour tester les modèles, nous avons utilisé la précision (accuracy) comme indicateur.  
 Nous avons utilisé les données du département du Rhône comme données d'entraînement et de test en utilisant des validations croisées.  
 
-Pour la classification, en utilisant MLPClassifier, nous avons obtenu, d'abord sans optimisation, une précision de 0,93. Après avoir optimisé les hyperparamètres, ce score est monté à environ 0,95.  
+Pour tester les modèles de classification, nous avons utilisé la précision (accuracy) comme indicateur.  En utilisant MLPClassifier, nous avons obtenu, d'abord sans optimisation, une précision de 0,93. Après avoir optimisé les hyperparamètres, ce score est monté à environ 0,95. Cela est très satisfaisant puisque cela signifie que 95% des prédictions sont correctes.  
 
-Pour la régression [RESTE A FAIRE]
+Pour la régression, nous avons utilisé le RMSE (root mean squared error) comme indicateur. En utilisant MLPRegressor, nous avons obtenu un RMSE de 40000. Nous sommes beaucoup plus mitigés sur ce point puisque cela signifie que, en moyenne, les prédictions du modèle s'écartent de 40 000 kWh/an des valeurs réelles. Pour donner un ordre de grandeur, une maison individuelle consomme en moyenne entre 10000 et 25000kwh/an.  
 
 
 ## Contribution

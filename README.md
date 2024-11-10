@@ -6,7 +6,7 @@ Ce projet s'inscrit dans le cadre du défi proposé par Enedis, visant à montre
 Pour cela, nous avons développé une web application (dash) permettant de présenter les résultats que nous avons obtenus. La structure de cette application est décrite plus loin.  
 
 Les données utilisées viennent de l'API de l'Ademe.  
-Lorsque vous lancerez la web application, les données présentées par défaut sont celles du département du Rhône (69) mais il vous sera possible de choisir un autre département.
+Lorsque vous lancerez la web application, les données présentées par défaut sont celles du département du Rhône (69) mais il vous sera possible de choisir un autre département.  
 
 
 ## Table des Matières
@@ -17,7 +17,7 @@ Lorsque vous lancerez la web application, les données présentées par défaut 
 - [Modèles utilisés](#modèles-utilisés)
 - [Tests](#tests)
 - [Contribution](#contribution)
-- [Auteurs](#auteurs)
+- [Auteurs](#auteurs)  
 
 
 ## Installation
@@ -31,7 +31,7 @@ git clone https://github.com/hugocollin/m2_enedis
 
 3) Installez les dépendances :
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt  
 ```
 
 ## Utilisation
@@ -45,7 +45,7 @@ python main.py
 - Cliquez sur l'URL qui apparaît. Un exemple pourrait être http://127.0.0.1:8050  
 
 Si vous voulez le lancer en ligne :
-- Allez sur cet URL : https://m2-enedis.onrender.com/
+- Allez sur cet URL : https://m2-enedis.onrender.com/  
 
 
 ## Description de l'application 
@@ -53,7 +53,7 @@ L'application s'organise en 4 onglets : Contexte, Modèles, Visualisations et Pr
 - Contexte présente le projet et la notion de DPE
 - Modèles permet de charger de nouvelles données à partir de l'API de l'Ademe et de réentraîner les modèles de prédiction à partir de nouvelles données.
 - Visualisations présente les données sous forme de tableau, de graphiques et de carte afin d'obtenir plusieurs indicateurs tels que le DPE ou la consommation.
-- Prédictions permet d'interroger les modèles que nous avons construits afin de prédire la consommation ou bien le DPE de son logement.
+- Prédictions permet d'interroger les modèles que nous avons construits afin de prédire la consommation ou bien le DPE de son logement.  
 
 
 ## Modèles utilisés
@@ -72,25 +72,28 @@ C'est pourquoi nous avons utilisé cette fois-ci la fonction MLPRegressor() de s
 ```python
 regressor = MLPRegressor(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001
  ```
-ATTENTION, CE MODELE PEUT CHANGER  
+[ATTENTION, CE MODELE PEUT CHANGER]  
 Pour ce modèle, nous avons utilisé les variables prédictives suivantes :
 - infos générales : code postal, période de construction, type de logement, surface habitable, nombre d'étages, hauteur sous plafond
-- infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, classe énergétique du logement
+- infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, classe énergétique du logement  
 
 
 ## Tests
-Cette section a pour but de tester le code
--- à faire
+Pour tester les modèles, nous avons utilisé la précision (accuracy) comme indicateur.  
+Nous avons utilisé les données du département du Rhône comme données d'entraînement et de test en utilisant des validations croisées.  
+
+Pour la classification, en utilisant MLPClassifier, nous avons obtenu, d'abord sans optimisation, une précision de 0,93. Après avoir optimisé les hyperparamètres, ce score est monté à environ 0,95.  
+
+Pour la régression [RESTE A FAIRE]
 
 
 ## Contribution
 Les contributions sont les bienvenues ! Pour contribuer :
-
-Forkez le projet.
-Créez votre branche de fonctionnalité (```git checkout -b feature/AmazingFeature```).
-Commitez vos changements (```git commit -m 'Add some AmazingFeature'```).
-Poussez à la branche (```git push origin feature/AmazingFeature```).
-Ouvrez une Pull Request.
+- Forkez le projet.
+- Créez votre branche de fonctionnalité (```git checkout -b feature/AmazingFeature```).
+- Commitez vos changements (```git commit -m 'Add some AmazingFeature'```).
+- Poussez à la branche (```git push origin feature/AmazingFeature```).
+- Ouvrez une Pull Request.  
 
 
 ## Auteurs

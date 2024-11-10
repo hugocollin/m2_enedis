@@ -23,6 +23,7 @@ Parmi ces modèles, l'arbre de décision a été celui qui a donné les résulta
 Pour cela, nous avons utilisé les variables prédictives suivantes :
 - infos générales : nom commune du logement, niveau de vie médian dans la commune, type de logement, surface habitable, nombre d'étages, hauteur sous plafond
 - infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, conso totale sur l'année, conso en chauffage, conso en eau chaude  
+
 Toutes ces données ont été trouvées sur le site de l'Ademe à l'exception du niveau de vie médian par commune qui lui a été récupéré via le site de l'insee : https://statistiques-locales.insee.fr/#c=indicator&i=filosofi.med&s=2021&t=A01&view=map1. Nous avons fait le choix de l'inclure car nous supposons qu'il est plus facile de rénover son logement lorsque nous avons un bon niveau de vie que lorsque c'est moins le cas.  
 A ce moment là, nous n'utilisions pas l'année de construction car 40% des logements dans les données du Rhône n'avaient pas cette colonne de remplie. Pour contourner ce problème, nous avons par la suite utilisé la période de construction qui est quant à elle beaucoup plus exhaustive. La période de construction semble importante car les anciens logements sont mieux isolés que les anciens grâce aux différentes réglementations (RT2012, RE2020)  
 Pour améliorer encore plus le modèle, nous avons récupéré l'altitude de chaque commune à l'aide de l'API de open elevation : https://api.open-elevation.com/api/v1/lookup.  

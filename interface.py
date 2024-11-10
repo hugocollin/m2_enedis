@@ -561,21 +561,21 @@ class DashInterface:
                 html.Div(
                     className='field_box',
                     children=[
-                        html.Label('Consommation totale sur une année (en kW)'),
+                        html.Label('Consommation totale sur une année (en kWh)'),
                         dcc.Input(id='conso-totale', type='number', placeholder='Consommation totale'),
                     ]
                 ),
                 html.Div(
                     className='field_box',
                     children=[
-                        html.Label('Consommation chauffage sur une année (en kW)'),
+                        html.Label('Consommation chauffage sur une année (en kWh)'),
                         dcc.Input(id='conso-chauffage', type='number', placeholder='Consommation chauffage'),
                     ]
                 ),
                 html.Div(
                     className='field_box',
                     children=[
-                        html.Label('Consommation eau chaude sanitaire sur une année (en kW)'),
+                        html.Label('Consommation eau chaude sanitaire sur une année (en kWh)'),
                         dcc.Input(id='conso-ecs', type='number', placeholder='Consommation eau chaude sanitaire'),
                     ]
                 ),
@@ -837,7 +837,7 @@ class DashInterface:
                 stats_output.append(html.Div(
                 className='stats_box',
                 children=[
-                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]} (en kW/an)"),
+                    html.H4(f"Statistiques de la {COLUMN_LABELS[col]} (en kWh/an)"),
                     html.P(f"Moyenne : {col_stats['moyenne']:.2f}"),
                     html.P(f"Écart-type : {col_stats['écart-type']:.2f}"),
                     html.P(f"Somme : {col_stats['somme']:.2f}"),
@@ -1084,7 +1084,7 @@ class DashInterface:
                 })
 
                 prediction = Model.predict_conso(data)
-                return html.H3(f"La consommation totale de votre logement est d'environ : {prediction:.2f} kW/an")
+                return html.H3(f"La consommation totale de votre logement est d'environ : {prediction:.2f} kWh/an")
 
     # Méthode pour exécuter l'interface Dash
     def run(self):

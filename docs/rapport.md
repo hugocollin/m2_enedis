@@ -12,7 +12,7 @@ Nous avons sélectionné les données du département du Rhône (69) comme donn�
 
 Pour prédire la classe énergétique et la consommation, nous avons fait le choix d'utiliser deux modèles différents : une classification et une régression respectivement car il ne nous a pas paru possible de réaliser des modèles performants pouvant prédire les deux et donc ne prenant ni l'un ni l'autre en entrée.  Ainsi chaque modèle utilise comme variable d'entrée la cible de l'autre (la conso pour calculer le DPE et le DPE pour calculer la conso).
 
-Comme indicateurs, nous avons pris la précision pour la classification et le RMSE pour la régression.
+Comme indicateurs, nous avons pris la précision pour la classification et le RMSE (root mean squared error) pour la régression.
 
 
 ### 2.2 Modèle de Classification de la classe énergétique pour le DPE
@@ -25,13 +25,13 @@ Pour cela, nous avons utilisé les variables prédictives suivantes :
 - infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, conso totale sur l'année, conso en chauffage, conso en eau chaude  
 
 Toutes ces données ont été trouvées sur le site de l'Ademe à l'exception du niveau de vie médian par commune qui lui a été récupéré via le site de l'insee : https://statistiques-locales.insee.fr/#c=indicator&i=filosofi.med&s=2021&t=A01&view=map1. Nous avons fait le choix de l'inclure car nous supposons qu'il est plus facile de rénover son logement lorsque nous avons un bon niveau de vie que lorsque c'est moins le cas.  
-A ce moment là, nous n'utilisions pas l'année de construction car 40% des logements dans les données du Rhône n'avaient pas cette colonne de remplie. Pour contourner ce problème, nous avons par la suite utilisé la période de construction qui est quant à elle beaucoup plus exhaustive. La période de construction semble importante car les anciens logements sont mieux isolés que les anciens grâce aux différentes réglementations (RT2012, RE2020)  
+A ce moment là, nous n'utilisions pas l'année de construction car 40% des logements dans les données du Rhône n'avaient pas cette colonne de remplie. Pour contourner ce problème, nous avons par la suite utilisé la période de construction qui est quant à elle beaucoup plus exhaustive. La période de construction semble importante car les anciens logements sont mieux isolés que les anciens grâce aux différentes réglementations (RT2012, RE2020).  
 Pour améliorer encore plus le modèle, nous avons récupéré l'altitude de chaque commune à l'aide de l'API de open elevation : https://api.open-elevation.com/api/v1/lookup.  
 Suite à cela, nous nous sommes rendus compte que demander un nom de commune à l'utilisateur est désagréable  car il y a un risque d'erreur trop important (majuscules, tirets, espaces, fautes d'orthographe...). C'est pourquoi nous avons décidé de ne demander que les codes postaux.  
 C'est à la suite de toutes ces étapes que nous avons obtenu le score de 0,93.
 
 Enfin, nous avons testé deux autres modèles : le gradient boosting et un réseau de neurone. (GradientBoostingClassifier et MLPClassifier).
-Parmi ces deux modèles, le MLPClassifier est celui ayant donné le meilleur résultat avec une précision de 0,95. Ce score a été obtenu suite à une optimisation des hyper-paramètres à l'aide d'un grid search
+Parmi ces deux modèles, le MLPClassifier est celui ayant donné le meilleur résultat avec une précision de 0,95. Ce score a été obtenu suite à une optimisation des hyper-paramètres à l'aide d'un grid search :
 ```python
 param_grid_rf = {
     'n_estimators': [100, 200],
@@ -53,25 +53,23 @@ Pour construire ce modèle, nous avons décidé d'utiliser les mêmes variables 
 - infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, classe énergétique du logement  
 
 Afin de choisir le meilleur modèle, nous en avons testé plusieurs, tous présents dans la bibliothèque scikit learn : RidgeCV, RandomForestRegressor, GradientBoostingRegressor, MLPRegressor.  
-Au final, parmi ces modèles, celui qui a réussi à avoir le meilleur résultat est ici aussi le réseau de neurones (MLPRegressor).
-[A VERIFIER QUE CELA NE CHANGE PAS]  
-Pour déterminer les hyper-paramètres, nous avons une fois encore réalisé un grid search
-[INSERER GRIDSEARCH ICI]
+Au final, parmi ces modèles, celui qui a réussi à avoir le meilleur résultat est ici aussi le réseau de neurones (MLPRegressor).   
+Pour déterminer les hyper-paramètres, nous avons une fois encore réalisé un grid search.
 
 Voici donc la configuration du modèle final :
 ```python
 regressor = MLPRegressor(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001)
 ```  
 
-Cependant, contrairement au modèle de classification qui donnait des résultats très satisfaisants, le modèle de régression ne donne pas de résultat réellement à la hauteur.
-[DONNER LE RESULTAT, QUEL RMSE ?]
+Cependant, contrairement au modèle de classification qui donnait des résultats très satisfaisants, le modèle de régression ne donne pas de résultat réellement à la hauteur puisque l'on obtient un RMSE d'environ 40000.  
+Cela signifie que, en moyenne, les prédictions du modèle s'écartent de 40 000 kWh/an des valeurs réelles. Pour donner un ordre de grandeur, une maison individuelle consomme en moyenne entre 10000 et 25000kwh/an. C'est pourquoi nous sommes assez mitigés sur ce résultat
 
 
 ## 3. Conclusions et Améliorations Futures
 ### Conclusions
 Dans le cadre de ce projet, nous avons exploré différentes approches pour prédire la classe énergétique (DPE) et la consommation réelle d'électricité des logements. Nous avons testé plusieurs modèles et avons finalement retenu un modèle de classification basé sur un réseau de neurones (MLPClassifier) pour prédire la classe énergétique et un modèle de régression (MLPRegressor) pour estimer la consommation énergétique.  
 
-Le modèle de classification a montré des résultats très satisfaisants avec une précision de 0,95, ce qui indique une très bonne capacité à prédire la classe énergétique des logements. En revanche, le modèle de régression n'a pas atteint les performances escomptées, avec un RMSE de [INSERER RMSE ICI], suggérant que des améliorations sont nécessaires pour mieux prédire la consommation énergétique.  
+Le modèle de classification a montré des résultats très satisfaisants avec une précision de 0,95, ce qui indique une très bonne capacité à prédire la classe énergétique des logements puisque cela signifie que 95% des prédictions sont correctes. En revanche, le modèle de régression n'a pas atteint les performances escomptées, avec un RMSE de 40000, suggérant que des améliorations sont nécessaires pour mieux prédire la consommation énergétique.  
 
 
 ### Améliorations Futures

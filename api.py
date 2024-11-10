@@ -2,17 +2,17 @@ import pandas as pd
 import requests
 
 class API:
-    # Méthode pour charger une page de données
+    # Fonction de récupération d'une page de données
     def get_data_page(self, url):
         response = requests.get(url)
 
-        # Vérification du statut de la réponse
+        # Récupération des données de la page
         if response.status_code == 200:
             return response.json()
         else:
             raise Exception(f"Erreur lors de la récupération des données : [{response.status_code}] {response.text}")
 
-    # Méthode pour récupérer les données
+    # Fonction de récupération des données
     def get_data(self):
         print("Détection des nouveaux DPE en cours...")
         all_dpe = []
@@ -167,8 +167,8 @@ class API:
             all_data.to_csv("assets/data_69.csv", index=False, sep="|", encoding="utf-8")
 
             print(f"{total_rows} DPE ajoutés")
-    
-    # Méthode pour obtenir les coordonnées géographiques d'un code postal
+
+    # Fonction de récupération des coordonnées géographiques d'un code postal
     def get_coordinates(self, code_postal):
         url = 'https://nominatim.openstreetmap.org/search'
         params = {
@@ -186,7 +186,7 @@ class API:
                 return float(data[0]['lat']), float(data[0]['lon'])
         return None, None
 
-    # Méthode pour obtenir l'altitude d'un point géographique
+    # Fonction de récupération de l'altitude d'un point géographique
     def get_altitude(lat, lon):
         url = 'https://api.open-elevation.com/api/v1/lookup'
         params = {
@@ -198,56 +198,3 @@ class API:
             if 'results' in data and len(data['results']) > 0:
                 return data['results'][0]['elevation']
         return None
-
-    def get_average_temperature(self, code_postal):
-        """
-        Récupère la température moyenne d'une commune basée sur son code postal en utilisant l'API OpenWeatherMap.
-        """
-        # [TEMP] POur faire fonctionner le code
-        # from api import API
-        # code_postal = '13080'
-        # moyenne_temp = API().get_average_temperature(code_postal)
-
-        # if moyenne_temp is not None:
-        #     print(f"La température moyenne pour le code postal {code_postal} est de {moyenne_temp:.2f}°C.")
-        # else:
-        #     print("Impossible de récupérer la température moyenne.")
-
-        # Récupération des coordonnées géographiques
-        lat, lon = self.get_coordinates(code_postal)
-        if lat is None or lon is None:
-            print("Coordonnées non trouvées pour le code postal fourni.")
-            return None
-
-        # Appel de l'API OpenWeatherMap
-        url = 'https://api.openweathermap.org/data/2.5/forecast'
-        params = {
-            'lat': lat,
-            'lon': lon,
-            'appid': 'deba5862a5629eebfb2e8a8d2108e4d6',
-            'units': 'metric',
-            'lang': 'fr'
-        }
-
-        response = requests.get(url, params=params)
-        if response.status_code != 200:
-            print(f"Erreur lors de la récupération des données météo : {response.status_code}")
-            return None
-
-        data = response.json()
-
-        # Extraction de la température
-        temperatures = []
-        for entry in data.get('list', []):
-            temp = entry.get('main', {}).get('temp')
-            if temp is not None:
-                temperatures.append(temp)
-
-        if not temperatures:
-            print("Aucune donnée de température disponible.")
-            return None
-
-        # Calcul de la température moyenne
-        average_temp = sum(temperatures) / len(temperatures)
-
-        return average_temp

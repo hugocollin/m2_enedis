@@ -10,18 +10,22 @@ from sklearn.metrics import accuracy_score, mean_squared_error
 class Model:
     def train_models(df):
         """
-        Cette fonction permet de créer un modèle de classification de l'étiquette DPE et de régression pour la consommation totale.
+        Cette fonction permet de créer un modèle de classification de la classe énergétique et un modèle de régression de la consommation totale.
         """
 
         # Chargement des données locales
         df = pd.read_csv('assets/data_69.csv', sep='|')
+        df_ls = pd.read_csv('assets/living_standards_69.csv', sep='|')
 
-        # Suppresion des colonnes informatives
+        # Mise en forme des données
         del_col = ['Nom commune', 'Date réception DPE', "Latitude", "Longitude", "Date_réception_DPE_graph"]
         df.drop(columns=del_col, inplace=True, errors='ignore')
-        
-        # Suppression des lignes avec des valeurs manquantes
         df = df.dropna()
+
+        # Ajout des données sur le niveau de vie ou la moyenne si la commune n'est pas renseignée
+        ls_mean = df_ls["Médiane niveau vie"].mean()
+        df = pd.merge(df, df_ls, how='left', on='Code postal')
+        df["Médiane niveau vie"] = df["Médiane niveau vie"].fillna(ls_mean)
 
         # Préparation des données pour le modèle
         df = pd.get_dummies(df, columns=[
@@ -51,11 +55,14 @@ class Model:
 
         # Création et entraînement du modèle de classification
         classifier = MLPClassifier(
-            random_state=0, hidden_layer_sizes=(100, 50), 
-            learning_rate_init=0.001, max_iter=300, tol=0.0001
+            hidden_layer_sizes=(100, 50),
+            learning_rate_init=0.001,
+            max_iter=300,
+            tol=0.0001,
+            random_state=0,
         )
         classifier.fit(X_train, y_class_train)
-
+        
         # Création et entraînement du modèle de régression
         regressor = MLPRegressor(
             random_state=0, hidden_layer_sizes=(100, 50), 
@@ -81,7 +88,7 @@ class Model:
 
     def predict_DPE(data):
         """
-        Cette fonction permet de faire une prédiction de la classe énergétique
+        Cette fonction permet de faire une prédiction de la classe énergétique.
         """
 
         # Chargement du modèle, du scaler, et des noms des variables
@@ -108,7 +115,6 @@ class Model:
         if latitude and longitude:
             altitude = API.get_altitude(latitude, longitude)
             if altitude is not None:
-                # Faire un case de l'ailtude en focntion de l'altitue
                 if altitude < 400:
                     data["Classe altitude"] = "inférieur à 400m"
                 elif altitude >= 400 and altitude <= 800:
@@ -120,6 +126,13 @@ class Model:
                 data["Classe altitude"] = "inférieur à 400m"
         else:
             data["Classe altitude"] = "inférieur à 400m"
+
+        # Ajout des données sur le niveau de vie
+        df_ls = pd.read_csv('assets/living_standards_69.csv', sep='|')
+        df_ls['Code postal'] = df_ls['Code postal'].astype(str)
+        ls_mean = df_ls["Médiane niveau vie"].mean()
+        data = pd.merge(data, df_ls, how='left', on='Code postal')
+        data["Médiane niveau vie"] = data["Médiane niveau vie"].fillna(ls_mean)
         
         # Application des mêmes transformations que lors de l'entraînement
         data = pd.get_dummies(data, columns=[
@@ -138,7 +151,7 @@ class Model:
     
     def predict_conso(data):
         """
-        Cette fonction permet de faire une prédiction de la consommation totale
+        Cette fonction permet de faire une prédiction de la consommation totale.
         """
 
         # Chargement du modèle, du scaler, et des noms des variables
@@ -165,7 +178,6 @@ class Model:
         if latitude and longitude:
             altitude = API.get_altitude(latitude, longitude)
             if altitude is not None:
-                # Faire un case de l'ailtude en focntion de l'altitue
                 if altitude < 400:
                     data["Classe altitude"] = "inférieur à 400m"
                 elif altitude >= 400 and altitude <= 800:
@@ -177,6 +189,13 @@ class Model:
                 data["Classe altitude"] = "inférieur à 400m"
         else:
             data["Classe altitude"] = "inférieur à 400m"
+
+        # Ajout des données sur le niveau de vie
+        df_ls = pd.read_csv('assets/living_standards_69.csv', sep='|')
+        df_ls['Code postal'] = df_ls['Code postal'].astype(str)
+        ls_mean = df_ls["Médiane niveau vie"].mean()
+        data = pd.merge(data, df_ls, how='left', on='Code postal')
+        data["Médiane niveau vie"] = data["Médiane niveau vie"].fillna(ls_mean)
         
         # Application des mêmes transformations que lors de l'entraînement
         data = pd.get_dummies(data, columns=[

@@ -35,23 +35,23 @@ pip install -r requirements.txt
 ```
 
 ## Utilisation
-Ce projet étant une web application, il y a deux manière de le lancer : en ligne ou en local.
+Ce projet étant une web application, il y a deux manière de la lancer : en ligne ou en local.
 
-Si vous voulez le lancer en local :
+Si vous voulez la lancer en local :
 - Lancez l'interface Dash avec les données récupérées :
 ```python
 python main.py
 ```
 - Cliquez sur l'URL qui apparaît. Un exemple pourrait être http://127.0.0.1:8050  
 
-Si vous voulez le lancer en ligne :
-- Allez sur cet URL : https://m2-enedis.onrender.com/  
+Si vous voulez la lancer en ligne :
+- Allez sur cet URL : https://m2-enedis.onrender.com/ (le site internet peut mettre jusqu'à 5 minutes pour se lancer, car nous utilisons une version gratuite de Render) 
 
 
 ## Description de l'application 
 L'application s'organise en 4 onglets : Contexte, Modèles, Visualisations et Prédictions.  
 - Contexte présente le projet et la notion de DPE
-- Modèles permet de charger de nouvelles données à partir de l'API de l'Ademe et de réentraîner les modèles de prédiction à partir de nouvelles données.
+- Modèles permet de charger de nouvelles données à partir de l'API de l'Ademe et de réentraîner les modèles de prédiction à partir de nouvelles données (cet onglet ne fonctionne qu'en version locale, car nous sommes limité par les perofrmances de la version gratuite de Render).
 - Visualisations présente les données sous forme de tableau, de graphiques et de carte afin d'obtenir plusieurs indicateurs tels que le DPE ou la consommation.
 - Prédictions permet d'interroger les modèles que nous avons construits afin de prédire la consommation ou bien le DPE de son logement.  
 
@@ -70,13 +70,13 @@ Nous avons construit un second modèle permettant de prédire la consommation.
 Pour cela, nous avons également utilisé un réseau neuronal. Mais là où le premier modèle était une classification, le second est une regression.  
 C'est pourquoi nous avons utilisé cette fois-ci la fonction MLPRegressor() de scikit learn.
 ```python
-regressor = MLPRegressor(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001
+regressor = MLPRegressor(random_state=0, hidden_layer_sizes=(100, 50), learning_rate_init=0.001, max_iter=300, tol=0.0001)
  ```
 Pour ce modèle, nous avons utilisé les variables prédictives suivantes :
 - infos générales : code postal, niveau de vie médian dans la commune, altitude, période de construction, type de logement, surface habitable, nombre d'étages, hauteur sous plafond
 - infos sur la consommation : type de chauffage, type d'énergie pour l'eau chaude, classe énergétique du logement  
 
-A savoir que le niveau de vie et l'altitude ne sont pas demandés à l'utilisateurs mais sont interrogés à partir du code postal.
+À savoir que le niveau de vie et l'altitude ne sont pas demandés à l'utilisateurs mais sont récupérés via une API grâce au code postal renseigné.
 
 
 ## Tests

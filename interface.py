@@ -67,9 +67,9 @@ class DashInterface:
                 html.P("L'application web comporte trois pages principales :"),
                 html.Ul([
                     html.Li("Page 'Contexte', présentant les objectifs du projet et le défi proposé par Enedis."),
-                    html.Li("Page 'Modèle', permettant le téléchargement des données, le chargement de nouvelles données et le réentraînement du modèle."),
+                    html.Li("Page 'Modèles', permettant le téléchargement des données, le chargement de nouvelles données et le réentraînement du modèle."),
                     html.Li("Page 'Visualisations', proposant des visuels interactifs pour explorer les données."),
-                    html.Li("Page 'Prédiction', permettant de prédire la classe énergétique d'un logement et sa consommation d'énergie.")
+                    html.Li("Page 'Prédictions', permettant de prédire la classe énergétique d'un logement et sa consommation d'énergie.")
                 ]),
 
                 html.H2("Équipe de projet"),
